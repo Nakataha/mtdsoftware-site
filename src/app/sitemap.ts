@@ -20,5 +20,17 @@ export default function sitemap(): MetadataRoute.Sitemap {
       url: `${baseUrl}/iletisim`,
       lastModified: new Date(),
     },
+    {
+      url: `${baseUrl}/gizlilik`,
+      lastModified: new Date(),
+    },
+    {
+      url: `${baseUrl}/kvkk`,
+      lastModified: new Date(),
+    },
+    {
+      url: `${baseUrl}/kullanim-sartlari`,
+      lastModified: new Date(),
+    },
   ];
 }

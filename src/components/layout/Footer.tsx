@@ -8,17 +8,17 @@ export default function Footer() {
         <nav>
           <ul className="flex flex-col sm:flex-row gap-2 sm:gap-6">
             <li>
-              <Link href="#" className="hover:underline">
+              <Link href="/gizlilik" className="hover:underline">
                 Gizlilik
               </Link>
             </li>
             <li>
-              <Link href="#" className="hover:underline">
+              <Link href="/kvkk" className="hover:underline">
                 KVKK
               </Link>
             </li>
             <li>
-              <Link href="#" className="hover:underline">
+              <Link href="/kullanim-sartlari" className="hover:underline">
                 Kullanım Şartları
               </Link>
             </li>
