@@ -49,6 +49,16 @@ export const metadata: Metadata = {
       "/og?title=MTD%20Software&subtitle=Freelance%20Yaz%C4%B1l%C4%B1m%20Geli%C5%9Ftirici",
     ],
   },
+
+  alternates: { canonical: "/" },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+    },
+  },
 };
 
 export default function RootLayout({
