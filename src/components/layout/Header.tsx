@@ -47,20 +47,20 @@ export default function Header() {
               <Image
                 src="/MTD_Logo.png"
                 alt="MTD Software"
-                width={300}
-                height={80}
+                width={210}
+                height={70}
                 priority
-                sizes="300px"
-                className="h-auto w-[300px] object-contain dark:hidden"
+                sizes="(min-width:1024px) 210px, (min-width:640px) 200px, 180px"
+                className="h-auto w-[180px] sm:w-[200px] lg:w-[210px] object-contain dark:hidden"
               />
               <Image
                 src="/MTD_Logo_Dark.png"
                 alt="MTD Software"
-                width={300}
-                height={80}
+                width={210}
+                height={70}
                 priority
-                sizes="300px"
-                className="hidden h-auto w-[300px] object-contain dark:block"
+                sizes="(min-width:1024px) 210px, (min-width:640px) 200px, 180px"
+                className="hidden h-auto w-[180px] sm:w-[200px] lg:w-[210px] object-contain dark:block"
               />
             </span>
           </Link>
@@ -133,20 +133,18 @@ export default function Header() {
                 <Image
                   src="/MTD_Logo.png"
                   alt="MTD Software"
-                  width={240}
-                  height={64}
+                  width={200}
+                  height={60}
                   priority
-                  sizes="240px"
-                  className="h-auto w-[240px] object-contain dark:hidden"
+                  className="h-auto w-[200px] object-contain dark:hidden"
                 />
                 <Image
                   src="/MTD_Logo_Dark.png"
                   alt="MTD Software"
-                  width={240}
-                  height={64}
+                  width={200}
+                  height={60}
                   priority
-                  sizes="240px"
-                  className="hidden h-auto w-[240px] object-contain dark:block"
+                  className="hidden h-auto w-[200px] object-contain dark:block"
                 />
               </Link>
               <button
