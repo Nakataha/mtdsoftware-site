@@ -2,19 +2,22 @@
 
 :root {
   --background: 0 0% 100%;
-  --foreground: 222.2 47.4% 11.2%;
-  --primary: 221.2 83.2% 53.3%;
-  --muted: 210 40% 96.1%;
-  --muted-foreground: 215.4 16.3% 46.9%;
+  --foreground: 209 69% 16%;
+  --primary: 212 100% 56%;
+  --muted: 210 33% 96%;
+  --muted-foreground: 209 17% 35%;
+  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+  --font-display: "Space Grotesk", "Inter", system-ui, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: 222.2 47.4% 11.2%;
-    --foreground: 210 40% 98%;
-    --primary: 221.2 83.2% 53.3%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --background: 209 69% 16%;
+    --foreground: 210 40% 96%;
+    --primary: 212 100% 56%;
+    --muted: 209 37% 22%;
+    --muted-foreground: 210 24% 74%;
   }
 }
 
@@ -24,8 +27,8 @@
   --color-primary: hsl(var(--primary));
   --color-muted: hsl(var(--muted));
   --color-muted-foreground: hsl(var(--muted-foreground));
-  --font-sans: system-ui, sans-serif;
-  --font-mono: ui-monospace, monospace;
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
 }
 
 @layer base {
