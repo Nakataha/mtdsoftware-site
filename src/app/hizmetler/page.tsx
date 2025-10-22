@@ -39,8 +39,12 @@ export const metadata: Metadata = {
 
 export default function ServicesPage() {
   return (
-    <section className="border-b border-muted/60 bg-background">
-      <div className="container flex flex-col gap-10 py-16">
+    <section className="relative overflow-hidden border-b border-muted/60 bg-background">
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,theme(colors.primary)/12%,transparent_55%)]"
+      />
+      <div className="relative mx-auto flex w-full max-w-6xl flex-col gap-12 px-4 py-20 sm:px-6 lg:px-8">
         <Breadcrumbs
           items={[
             { label: "Anasayfa", href: "/" },
@@ -48,26 +52,54 @@ export default function ServicesPage() {
           ]}
         />
 
-        <header className="space-y-4">
-          <h1 className="font-display text-4xl font-semibold text-foreground sm:text-5xl">Hizmetler</h1>
-          <p className="max-w-2xl text-base text-foreground/70">
-            Küçük adımlı teslimlerle ilerleyen projeler kuruyorum. Kapsamı netleştirip erken demo alır, süreci
-            yazılı olarak dokümante eder ve ekiplerinize devredilebilir çözümler sunarım.
-          </p>
+        <header className="grid gap-8 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] lg:items-end">
+          <div className="space-y-4">
+            <p className="inline-flex items-center rounded-full border border-primary/20 bg-primary/10 px-4 py-1 text-xs font-medium uppercase tracking-wide text-primary">
+              Uçtan uca kurumsal yazılım teslimi
+            </p>
+            <h1 className="font-display text-4xl font-semibold text-foreground sm:text-5xl">
+              Net kapsamlı, ölçülebilir ve sürdürülebilir yazılım projeleri
+            </h1>
+            <p className="text-base text-foreground/70 sm:text-lg">
+              MTD Software olarak, kurumların dijital kanallarını güçlendiren ve operasyonlarını hızlandıran çözümler
+              geliştiriyoruz. Ön analizden canlıya alıma kadar her aşamada şeffaf, dokümante edilmiş ve ölçeklenebilir bir
+              yaklaşım benimsiyoruz.
+            </p>
+          </div>
+          <div className="flex flex-col gap-4 rounded-3xl border border-primary/30 bg-primary/5 p-6 text-sm text-foreground/70 shadow-lg shadow-primary/10">
+            <p className="font-display text-xl font-semibold text-foreground">Birlikte nasıl ilerleriz?</p>
+            <ul className="space-y-2">
+              <li className="flex items-start gap-3">
+                <span className="mt-1 inline-flex h-2 w-2 rounded-full bg-primary" aria-hidden="true" />
+                <span>İhtiyaç, risk ve başarı kriterlerini birlikte tanımlarız.</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="mt-1 inline-flex h-2 w-2 rounded-full bg-primary" aria-hidden="true" />
+                <span>Her sprint sonunda çalışan prototipler ve ölçümler sunarız.</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="mt-1 inline-flex h-2 w-2 rounded-full bg-primary" aria-hidden="true" />
+                <span>Devredilebilir kod, dokümantasyon ve eğitim teslim ederiz.</span>
+              </li>
+            </ul>
+          </div>
         </header>
 
-        <div className="grid gap-6 md:grid-cols-3">
+        <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
           {serviceSections.map((section) => (
             <article
               key={section.title}
               id={section.id}
-              className="flex flex-col gap-4 rounded-2xl border border-muted/60 bg-background/80 p-8 shadow-sm shadow-primary/5"
+              className="flex flex-col gap-5 rounded-3xl border border-muted/60 bg-background/90 p-8 shadow-sm shadow-primary/10 transition-transform hover:-translate-y-1 hover:shadow-lg hover:shadow-primary/10"
             >
-              <h2 className="font-display text-2xl font-semibold text-foreground">{section.title}</h2>
-              <ul className="space-y-2 text-sm text-foreground/70">
+              <div>
+                <span className="text-xs font-semibold uppercase tracking-wide text-primary">{section.title}</span>
+                <h2 className="mt-3 font-display text-2xl font-semibold text-foreground">Öne çıkan çıktılar</h2>
+              </div>
+              <ul className="space-y-3 text-sm text-foreground/70">
                 {section.items.map((item) => (
-                  <li key={item} className="flex items-start gap-2">
-                    <span className="mt-1 inline-block h-1.5 w-1.5 rounded-full bg-primary" aria-hidden="true" />
+                  <li key={item} className="flex items-start gap-3">
+                    <span className="mt-1 inline-block h-2 w-2 rounded-full bg-primary" aria-hidden="true" />
                     <span>{item}</span>
                   </li>
                 ))}
@@ -76,12 +108,36 @@ export default function ServicesPage() {
           ))}
         </div>
 
-        <div className="rounded-2xl border border-primary/30 bg-primary/5 p-8 text-sm text-foreground/70">
-          <h2 className="font-display text-xl font-semibold text-foreground">Teslim yaklaşımı</h2>
-          <p className="mt-3">
-            Küçük adımlı geliştirme, erken demo ve yazılı dokümantasyon benim için standart. Her sprint sonunda canlı
-            senaryo ve notları paylaşır, sonraki adımları birlikte planlarız.
-          </p>
+        <div className="grid gap-8 rounded-3xl border border-muted/60 bg-background/95 p-8 shadow-lg shadow-primary/5 md:grid-cols-[2fr_3fr] md:items-center">
+          <div className="space-y-4">
+            <h2 className="font-display text-3xl font-semibold text-foreground">Teknik mükemmeliyet için kurumsal standartlar</h2>
+            <p className="text-sm text-foreground/70">
+              Performans, güvenlik ve sürdürülebilirlik ölçümlerini proje başında belirler, her teslimatta takip ederiz. Kod
+              incelemeleri, CI/CD süreçleri ve gözden geçirme oturumları ile riskleri erkenden kontrol altına alırız.
+            </p>
+          </div>
+          <dl className="grid gap-4 sm:grid-cols-2">
+            <div className="rounded-2xl border border-primary/20 bg-primary/5 p-5">
+              <dt className="text-xs font-semibold uppercase tracking-wide text-primary">Teslim Süreçleri</dt>
+              <dd className="mt-2 text-lg font-semibold text-foreground">Sprint bazlı planlama & raporlama</dd>
+              <p className="mt-1 text-xs text-foreground/60">Ürün yöneticileri ve ekiplerle ortak ritim tutarız.</p>
+            </div>
+            <div className="rounded-2xl border border-primary/20 bg-primary/5 p-5">
+              <dt className="text-xs font-semibold uppercase tracking-wide text-primary">Teknik İzlenebilirlik</dt>
+              <dd className="mt-2 text-lg font-semibold text-foreground">CI/CD, otomatik testler, gözlemleme</dd>
+              <p className="mt-1 text-xs text-foreground/60">Her ortamda aynı kaliteyi garanti ederiz.</p>
+            </div>
+            <div className="rounded-2xl border border-primary/20 bg-primary/5 p-5">
+              <dt className="text-xs font-semibold uppercase tracking-wide text-primary">Bilgi Transferi</dt>
+              <dd className="mt-2 text-lg font-semibold text-foreground">Detaylı dokümantasyon & eğitim</dd>
+              <p className="mt-1 text-xs text-foreground/60">Ekipleriniz için sürdürülebilir devri kolaylaştırır.</p>
+            </div>
+            <div className="rounded-2xl border border-primary/20 bg-primary/5 p-5">
+              <dt className="text-xs font-semibold uppercase tracking-wide text-primary">Destek</dt>
+              <dd className="mt-2 text-lg font-semibold text-foreground">Go-live sonrası 30 gün destek</dd>
+              <p className="mt-1 text-xs text-foreground/60">Canlıya geçiş sonrası kritik süreçleri birlikte izleriz.</p>
+            </div>
+          </dl>
         </div>
       </div>
     </section>
