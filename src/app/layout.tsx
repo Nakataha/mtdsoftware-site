@@ -4,7 +4,7 @@ import Footer from "@/components/layout/Footer";
 import Header from "@/components/layout/Header";
 import "./globals.css";
 
-const siteUrl = "https://mtdsoftware.com";
+const siteUrl = "https://www.mtdsoftware.com.tr";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 const spaceGrotesk = Space_Grotesk({
@@ -20,6 +20,9 @@ export const metadata: Metadata = {
   },
   description:
     "Freelance yazılım geliştirici olarak modern web projeleri, SaaS ürünleri ve teknik danışmanlık sunuyorum.",
+  alternates: {
+    canonical: "/", // canonical kesinleşsin
+  },
   openGraph: {
     title: "MTD Software | Freelance Yazılım Geliştirici",
     description:
