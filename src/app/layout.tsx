@@ -13,7 +13,7 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(siteUrl),
+  metadataBase: new URL("https://www.mtdsoftware.com.tr"),
   title: {
     default: "MTD Software | Freelance Yazılım Geliştirici",
     template: "%s | MTD Software",
@@ -21,13 +21,21 @@ export const metadata: Metadata = {
   description:
     "Freelance yazılım geliştirici olarak modern web projeleri, SaaS ürünleri ve teknik danışmanlık sunuyorum.",
   alternates: {
-    canonical: "/", // canonical kesinleşsin
+    canonical: "/",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+    },
   },
   openGraph: {
     title: "MTD Software | Freelance Yazılım Geliştirici",
     description:
       "Freelance yazılım geliştirici olarak modern web projeleri, SaaS ürünleri ve teknik danışmanlık sunuyorum.",
-    url: siteUrl,
+    url: "https://www.mtdsoftware.com.tr",
     siteName: "MTD Software",
     images: [
       {
@@ -50,6 +58,7 @@ export const metadata: Metadata = {
     ],
   },
 };
+
 
 export default function RootLayout({
   children,
