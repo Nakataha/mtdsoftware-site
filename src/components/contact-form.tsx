@@ -1,8 +1,36 @@
 "use client";
 
 import type { ChangeEvent, FormEvent } from "react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
+/* ========= Turnstile tipleri ========= */
+type TurnstileSize = "normal" | "compact" | "invisible";
+type TurnstileTheme = "auto" | "light" | "dark";
+
+interface TurnstileRenderOptions {
+  sitekey: string;
+  size?: TurnstileSize;
+  callback?: (token: string) => void;
+  "error-callback"?: () => void;
+  "expired-callback"?: () => void;
+  theme?: TurnstileTheme;
+  action?: string;
+  cData?: string;
+}
+
+interface TurnstileAPI {
+  render: (el: HTMLElement, opts: TurnstileRenderOptions) => string;
+  execute: (widgetId: string) => void;
+  reset: (widgetId: string) => void;
+}
+
+declare global {
+  interface Window {
+    turnstile?: TurnstileAPI;
+  }
+}
+
+/* ========= Form durum tipleri ========= */
 interface FormState {
   name: string;
   email: string;
@@ -11,7 +39,6 @@ interface FormState {
   message: string;
   consent: boolean;
 }
-
 type Status = "idle" | "loading" | "success" | "error";
 
 const initialState: FormState = {
@@ -28,19 +55,82 @@ export default function ContactForm() {
   const [status, setStatus] = useState<Status>("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const updateField = (field: keyof FormState) => (
-    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const value =
-      field === "consent"
-        ? (event as ChangeEvent<HTMLInputElement>).target.checked
-        : event.target.value;
+  // Honeypot (gizli alan)
+  const hpRef = useRef<HTMLInputElement>(null);
 
-    setForm((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
-  };
+  // Turnstile (invisible)
+  const sitekey = process.env.NEXT_PUBLIC_TURNSTILE_SITEKEY as string | undefined;
+  const tsDivRef = useRef<HTMLDivElement>(null);
+  const tsWidgetIdRef = useRef<string | null>(null);
+
+  // Turnstile scriptini güvenli şekilde yükle
+  useEffect(() => {
+    if (!sitekey) return; // env yoksa devre dışı
+    if (typeof window === "undefined") return;
+
+    const ensureScript = (): Promise<void> =>
+      new Promise<void>((resolve) => {
+        if (document.getElementById("cf-ts")) {
+          resolve();
+          return;
+        }
+        const s = document.createElement("script");
+        s.id = "cf-ts";
+        s.src = "https://challenges.cloudflare.com/turnstile/v0/api.js";
+        s.async = true;
+        s.defer = true;
+        s.onload = () => resolve();
+        document.head.appendChild(s);
+      });
+
+    ensureScript().then(() => {
+      const container = tsDivRef.current;
+      if (!window.turnstile || !container || tsWidgetIdRef.current) return;
+
+      tsWidgetIdRef.current = window.turnstile.render(container, {
+        sitekey,
+        size: "invisible",
+        callback: () => {
+          // token DOM'a yazılır; submit anında okunacak
+        },
+      });
+    });
+  }, [sitekey]);
+
+  // Invisible Turnstile token'ını oku (null-safe)
+  async function getTurnstileToken(): Promise<string | undefined> {
+    if (!sitekey || !window.turnstile || !tsWidgetIdRef.current) return undefined;
+
+    const target = tsDivRef.current; // local ref snapshot
+    if (!target) return undefined;
+
+    return new Promise<string>((resolve) => {
+      const obs = new MutationObserver(() => {
+        const input = target.querySelector(
+          'input[name="cf-turnstile-response"]'
+        ) as HTMLInputElement | null;
+
+        if (input && input.value) {
+          resolve(input.value);
+          obs.disconnect();
+        }
+      });
+
+      obs.observe(target, { subtree: true, childList: true });
+      window.turnstile!.execute(tsWidgetIdRef.current!);
+    });
+  }
+
+  const updateField =
+    (field: keyof FormState) =>
+    (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      const value =
+        field === "consent"
+          ? (event as ChangeEvent<HTMLInputElement>).target.checked
+          : event.target.value;
+
+      setForm((prev) => ({ ...prev, [field]: value }));
+    };
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -56,34 +146,44 @@ export default function ContactForm() {
     setErrorMessage(null);
 
     try {
+      const hp = hpRef.current?.value?.trim() ?? "";
+
+      // Turnstile token (varsa)
+      const turnstileToken = await getTurnstileToken();
+
       const payload = {
         name: form.name.trim(),
         email: form.email.trim(),
         message: `Şirket / Organizasyon: ${form.company.trim() || "-"}\nKonu: ${
           form.subject.trim() || "-"
         }\n\n${form.message.trim()}`,
+        subject: form.subject.trim(),
+        company: form.company.trim(),
+        hp,
+        turnstileToken,
       };
 
       const response = await fetch("/api/contact", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
 
       if (!response.ok) {
-        const data = await response.json().catch(() => null);
+        const data: { message?: string } | null = await response.json().catch(() => null);
         throw new Error(data?.message || "Mesaj gönderilemedi.");
       }
 
       setStatus("success");
       setForm(initialState);
-    } catch (error) {
+
+      if (window.turnstile && tsWidgetIdRef.current) {
+        window.turnstile.reset(tsWidgetIdRef.current);
+      }
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Mesaj gönderilemedi.";
       setStatus("error");
-      setErrorMessage(
-        error instanceof Error ? error.message : "Mesaj gönderilemedi."
-      );
+      setErrorMessage(msg);
     }
   };
 
@@ -93,11 +193,14 @@ export default function ContactForm() {
       className="grid gap-4 rounded-3xl border border-muted/60 bg-background/90 p-6 text-sm text-foreground/70 shadow-inner shadow-primary/5"
       noValidate
     >
+      {/* Honeypot (gizli) */}
+      <input ref={hpRef} type="text" name="hp" autoComplete="off" className="hidden" />
+
+      {/* Turnstile (invisible widget burada render ediliyor) */}
+      {sitekey && <div ref={tsDivRef} className="hidden" />}
+
       <div className="grid gap-2">
-        <label
-          htmlFor="name"
-          className="text-xs font-semibold uppercase tracking-wide text-foreground/60"
-        >
+        <label htmlFor="name" className="text-xs font-semibold uppercase tracking-wide text-foreground/60">
           Ad Soyad
         </label>
         <input
@@ -111,11 +214,9 @@ export default function ContactForm() {
           required
         />
       </div>
+
       <div className="grid gap-2">
-        <label
-          htmlFor="email"
-          className="text-xs font-semibold uppercase tracking-wide text-foreground/60"
-        >
+        <label htmlFor="email" className="text-xs font-semibold uppercase tracking-wide text-foreground/60">
           E-posta
         </label>
         <input
@@ -129,11 +230,9 @@ export default function ContactForm() {
           required
         />
       </div>
+
       <div className="grid gap-2">
-        <label
-          htmlFor="company"
-          className="text-xs font-semibold uppercase tracking-wide text-foreground/60"
-        >
+        <label htmlFor="company" className="text-xs font-semibold uppercase tracking-wide text-foreground/60">
           Şirket / Organizasyon
         </label>
         <input
@@ -146,11 +245,9 @@ export default function ContactForm() {
           className="rounded-xl border border-muted/60 bg-background px-4 py-3 text-sm text-foreground placeholder:text-foreground/40 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
         />
       </div>
+
       <div className="grid gap-2">
-        <label
-          htmlFor="subject"
-          className="text-xs font-semibold uppercase tracking-wide text-foreground/60"
-        >
+        <label htmlFor="subject" className="text-xs font-semibold uppercase tracking-wide text-foreground/60">
           Konu
         </label>
         <input
@@ -163,11 +260,9 @@ export default function ContactForm() {
           className="rounded-xl border border-muted/60 bg-background px-4 py-3 text-sm text-foreground placeholder:text-foreground/40 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
         />
       </div>
+
       <div className="grid gap-2">
-        <label
-          htmlFor="message"
-          className="text-xs font-semibold uppercase tracking-wide text-foreground/60"
-        >
+        <label htmlFor="message" className="text-xs font-semibold uppercase tracking-wide text-foreground/60">
           Mesaj
         </label>
         <textarea
@@ -181,6 +276,7 @@ export default function ContactForm() {
           required
         />
       </div>
+
       <label className="flex items-start gap-3 text-xs text-foreground/60">
         <input
           type="checkbox"
@@ -194,6 +290,7 @@ export default function ContactForm() {
           KVKK onayını kabul ediyorum ve mesajımın info@mtdsoftware.com.tr adresine iletilmesini onaylıyorum.
         </span>
       </label>
+
       <div className="space-y-3">
         <button
           type="submit"
@@ -202,21 +299,9 @@ export default function ContactForm() {
         >
           {status === "loading" ? "Gönderiliyor..." : "Gönder"}
         </button>
-        <p
-          role="status"
-          aria-live="polite"
-          className="min-h-[1.5rem] text-center text-xs font-medium"
-        >
-          {status === "success" && (
-            <span className="text-primary">
-              Teşekkürler! Mesajınız başarıyla iletildi.
-            </span>
-          )}
-          {status === "error" && (
-            <span className="text-red-500">
-              {errorMessage || "Mesaj gönderilemedi. Lütfen tekrar deneyin."}
-            </span>
-          )}
+        <p role="status" aria-live="polite" className="min-h-[1.5rem] text-center text-xs font-medium">
+          {status === "success" && <span className="text-primary">Teşekkürler! Mesajınız başarıyla iletildi.</span>}
+          {status === "error" && <span className="text-red-500">{errorMessage || "Mesaj gönderilemedi. Lütfen tekrar deneyin."}</span>}
         </p>
       </div>
     </form>
