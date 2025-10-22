@@ -62,18 +62,15 @@ export default function ContactForm() {
   const sitekey = process.env.NEXT_PUBLIC_TURNSTILE_SITEKEY as string | undefined;
   const tsDivRef = useRef<HTMLDivElement>(null);
   const tsWidgetIdRef = useRef<string | null>(null);
+  const [tsToken, setTsToken] = useState<string>("");
 
-  // Turnstile scriptini güvenli şekilde yükle
+  // Turnstile scriptini yükle ve render et
   useEffect(() => {
-    if (!sitekey) return; // env yoksa devre dışı
-    if (typeof window === "undefined") return;
+    if (!sitekey || typeof window === "undefined") return;
 
     const ensureScript = (): Promise<void> =>
       new Promise<void>((resolve) => {
-        if (document.getElementById("cf-ts")) {
-          resolve();
-          return;
-        }
+        if (document.getElementById("cf-ts")) return resolve();
         const s = document.createElement("script");
         s.id = "cf-ts";
         s.src = "https://challenges.cloudflare.com/turnstile/v0/api.js";
@@ -90,34 +87,40 @@ export default function ContactForm() {
       tsWidgetIdRef.current = window.turnstile.render(container, {
         sitekey,
         size: "invisible",
-        callback: () => {
-          // token DOM'a yazılır; submit anında okunacak
+        callback: (token: string) => {
+          setTsToken(token);
         },
+        "expired-callback": () => setTsToken(""),
+        "error-callback": () => setTsToken(""),
       });
     });
   }, [sitekey]);
 
-  // Invisible Turnstile token'ını oku (null-safe)
-  async function getTurnstileToken(): Promise<string | undefined> {
+  // Token alma — asla sonsuz beklemesin
+  async function getTurnstileToken(maxWaitMs = 3000): Promise<string | undefined> {
+    // Sitekey yoksa veya widget yoksa token gereksiz
     if (!sitekey || !window.turnstile || !tsWidgetIdRef.current) return undefined;
 
-    const target = tsDivRef.current; // local ref snapshot
-    if (!target) return undefined;
+    // Callback ile geldiyse direkt dön
+    if (tsToken) return tsToken;
 
-    return new Promise<string>((resolve) => {
-      const obs = new MutationObserver(() => {
-        const input = target.querySelector(
-          'input[name="cf-turnstile-response"]'
-        ) as HTMLInputElement | null;
+    // Yürütmeyi tetikle ve belge genelinde gizli inputu ara (container ile sınırlı değil)
+    window.turnstile.execute(tsWidgetIdRef.current);
 
-        if (input && input.value) {
-          resolve(input.value);
-          obs.disconnect();
-        }
-      });
+    return new Promise<string | undefined>((resolve) => {
+      const started = Date.now();
 
-      obs.observe(target, { subtree: true, childList: true });
-      window.turnstile!.execute(tsWidgetIdRef.current!);
+      const check = () => {
+        // Turnstile genelde şu inputu enjekte eder:
+        const input = document.querySelector<HTMLInputElement>('input[name="cf-turnstile-response"]');
+        if (input && input.value) return resolve(input.value);
+
+        if (tsToken) return resolve(tsToken);
+        if (Date.now() - started >= maxWaitMs) return resolve(undefined); // süre doldu
+        requestAnimationFrame(check);
+      };
+
+      check();
     });
   }
 
@@ -128,7 +131,6 @@ export default function ContactForm() {
         field === "consent"
           ? (event as ChangeEvent<HTMLInputElement>).target.checked
           : event.target.value;
-
       setForm((prev) => ({ ...prev, [field]: value }));
     };
 
@@ -148,26 +150,31 @@ export default function ContactForm() {
     try {
       const hp = hpRef.current?.value?.trim() ?? "";
 
-      // Turnstile token (varsa)
-      const turnstileToken = await getTurnstileToken();
+      // Turnstile token (varsa, en fazla 3 sn bekle)
+      const turnstileToken = await getTurnstileToken(3000);
 
       const payload = {
         name: form.name.trim(),
         email: form.email.trim(),
-        message: `Şirket / Organizasyon: ${form.company.trim() || "-"}\nKonu: ${
-          form.subject.trim() || "-"
-        }\n\n${form.message.trim()}`,
+        message: form.message.trim(),
         subject: form.subject.trim(),
         company: form.company.trim(),
         hp,
         turnstileToken,
       };
 
+      // 15 sn client-timeout (ek sigorta)
+      const controller = new AbortController();
+      const kill = setTimeout(() => controller.abort(), 15000);
+
       const response = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
+        signal: controller.signal,
       });
+
+      clearTimeout(kill);
 
       if (!response.ok) {
         const data: { message?: string } | null = await response.json().catch(() => null);
@@ -179,9 +186,15 @@ export default function ContactForm() {
 
       if (window.turnstile && tsWidgetIdRef.current) {
         window.turnstile.reset(tsWidgetIdRef.current);
+        setTsToken("");
       }
     } catch (err) {
-      const msg = err instanceof Error ? err.message : "Mesaj gönderilemedi.";
+      const msg =
+        err instanceof DOMException && err.name === "AbortError"
+          ? "Sunucu yanıt vermedi. Lütfen tekrar deneyin."
+          : err instanceof Error
+          ? err.message
+          : "Mesaj gönderilemedi.";
       setStatus("error");
       setErrorMessage(msg);
     }
@@ -196,7 +209,7 @@ export default function ContactForm() {
       {/* Honeypot (gizli) */}
       <input ref={hpRef} type="text" name="hp" autoComplete="off" className="hidden" />
 
-      {/* Turnstile (invisible widget burada render ediliyor) */}
+      {/* Turnstile (invisible widget) */}
       {sitekey && <div ref={tsDivRef} className="hidden" />}
 
       <div className="grid gap-2">
