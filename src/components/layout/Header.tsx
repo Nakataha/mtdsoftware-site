@@ -87,7 +87,7 @@ export default function Header() {
           <button
             type="button"
             onClick={closeMobileMenu}
-            className="h-full w-full bg-foreground/30 backdrop-blur-sm"
+            className="h-full w-full bg-background"
             aria-label="Menüyü kapat"
           />
           <div className="relative flex h-full w-[min(20rem,85%)] flex-col border-l border-muted/40 bg-background px-5 py-6 shadow-2xl">
