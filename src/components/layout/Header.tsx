@@ -42,25 +42,24 @@ export default function Header() {
             className="flex items-center gap-3 text-lg font-semibold text-foreground transition-colors hover:text-primary sm:text-xl"
             aria-label="MTD Software anasayfası"
           >
-            {/* Logo — sabit 300px (light/dark swap) */}
             <span className="inline-flex items-center">
               <Image
                 src="/MTD_Logo.png"
                 alt="MTD Software"
-                width={210}
-                height={70}
+                width={180}
+                height={60}
                 priority
-                sizes="(min-width:1024px) 210px, (min-width:640px) 200px, 180px"
-                className="h-auto w-[180px] sm:w-[200px] lg:w-[210px] object-contain dark:hidden"
+                sizes="(min-width:1024px) 180px, (min-width:640px) 170px, 150px"
+                className="h-auto w-[150px] sm:w-[170px] lg:w-[180px] object-contain dark:hidden"
               />
               <Image
                 src="/MTD_Logo_Dark.png"
                 alt="MTD Software"
-                width={210}
-                height={70}
+                width={180}
+                height={60}
                 priority
-                sizes="(min-width:1024px) 210px, (min-width:640px) 200px, 180px"
-                className="hidden h-auto w-[180px] sm:w-[200px] lg:w-[210px] object-contain dark:block"
+                sizes="(min-width:1024px) 180px, (min-width:640px) 170px, 150px"
+                className="hidden h-auto w-[150px] sm:w-[170px] lg:w-[180px] object-contain dark:block"
               />
             </span>
           </Link>
@@ -133,18 +132,18 @@ export default function Header() {
                 <Image
                   src="/MTD_Logo.png"
                   alt="MTD Software"
-                  width={200}
-                  height={60}
+                  width={140}
+                  height={40}
                   priority
-                  className="h-auto w-[200px] object-contain dark:hidden"
+                  className="h-auto w-[140px] object-contain dark:hidden"
                 />
                 <Image
                   src="/MTD_Logo_Dark.png"
                   alt="MTD Software"
-                  width={200}
-                  height={60}
+                  width={140}
+                  height={40}
                   priority
-                  className="hidden h-auto w-[200px] object-contain dark:block"
+                  className="hidden h-auto w-[140px] object-contain dark:block"
                 />
               </Link>
               <button
