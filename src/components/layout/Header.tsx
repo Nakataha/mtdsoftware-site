@@ -16,17 +16,15 @@ export default function Header() {
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
   const closeMobileMenu = useCallback(() => setMobileMenuOpen(false), []);
 
-  // ESC ile kapama
   useEffect(() => {
     if (!isMobileMenuOpen) return;
-    const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape") closeMobileMenu();
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === "Escape") closeMobileMenu();
     };
     window.addEventListener("keydown", handleEscape);
     return () => window.removeEventListener("keydown", handleEscape);
   }, [closeMobileMenu, isMobileMenuOpen]);
 
-  // Menü açıkken sayfa kaymasını kilitle
   useEffect(() => {
     const el = document.documentElement;
     el.style.overflow = isMobileMenuOpen ? "hidden" : "";
@@ -44,25 +42,27 @@ export default function Header() {
             className="flex items-center gap-3 text-lg font-semibold text-foreground transition-colors hover:text-primary sm:text-xl"
             aria-label="MTD Software anasayfası"
           >
-            {/* Logo (tema bazlı swap) */}
-            <span className="relative inline-block h-9 w-[150px] sm:h-10 sm:w-[170px]">
+            {/* Logo — responsive ve tema bazlı */}
+            <span className="inline-flex items-center">
               {/* Light */}
               <Image
                 src="/MTD_Logo.png"
                 alt="MTD Software"
-                fill
-                sizes="170px"
-                className="object-contain dark:hidden"
+                width={240}
+                height={64}
                 priority
+                className="h-9 w-[160px] sm:h-10 sm:w-[180px] lg:h-11 lg:w-[200px] object-contain dark:hidden"
+                sizes="(min-width:1024px) 200px, (min-width:640px) 180px, 160px"
               />
               {/* Dark */}
               <Image
                 src="/MTD_Logo_Dark.png"
                 alt="MTD Software"
-                fill
-                sizes="170px"
-                className="hidden object-contain dark:block"
+                width={240}
+                height={64}
                 priority
+                className="hidden h-9 w-[160px] object-contain sm:h-10 sm:w-[180px] lg:h-11 lg:w-[200px] dark:block"
+                sizes="(min-width:1024px) 200px, (min-width:640px) 180px, 160px"
               />
             </span>
           </Link>
@@ -109,14 +109,14 @@ export default function Header() {
         </div>
       </header>
 
-      {/* Mobil menü (header DIŞINDA, yüksek z-index) */}
+      {/* Mobil menü */}
       {isMobileMenuOpen && (
         <div
           className="fixed inset-0 z-[1000] flex md:hidden"
           role="dialog"
           aria-modal="true"
         >
-          {/* Koyu overlay */}
+          {/* Overlay */}
           <button
             type="button"
             onClick={closeMobileMenu}
@@ -124,7 +124,7 @@ export default function Header() {
             aria-label="Menüyü kapat"
           />
 
-          {/* Opak panel */}
+          {/* Panel */}
           <div className="relative z-[1001] flex h-full w-[min(20rem,85%)] flex-col border-l border-muted/40 bg-white px-5 py-6 shadow-2xl dark:bg-[#0b2036]">
             <div className="flex items-center justify-between">
               <Link
@@ -132,24 +132,25 @@ export default function Header() {
                 className="flex items-center gap-2 text-lg font-semibold text-foreground"
                 onClick={closeMobileMenu}
               >
-                <span className="relative inline-block h-8 w-[135px]">
-                  <Image
-                    src="/MTD_Logo.png"
-                    alt="MTD Software"
-                    fill
-                    sizes="135px"
-                    className="object-contain dark:hidden"
-                    priority
-                  />
-                  <Image
-                    src="/MTD_Logo_Dark.png"
-                    alt="MTD Software"
-                    fill
-                    sizes="135px"
-                    className="hidden object-contain dark:block"
-                    priority
-                  />
-                </span>
+                {/* Mobil logo — aynı ölçekler */}
+                <Image
+                  src="/MTD_Logo.png"
+                  alt="MTD Software"
+                  width={220}
+                  height={60}
+                  priority
+                  className="h-8 w-[135px] object-contain dark:hidden"
+                  sizes="135px"
+                />
+                <Image
+                  src="/MTD_Logo_Dark.png"
+                  alt="MTD Software"
+                  width={220}
+                  height={60}
+                  priority
+                  className="hidden h-8 w-[135px] object-contain dark:block"
+                  sizes="135px"
+                />
               </Link>
               <button
                 type="button"
