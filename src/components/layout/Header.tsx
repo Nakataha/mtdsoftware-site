@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 
 const navigation = [
   { label: "Anasayfa", href: "/" },
@@ -13,7 +14,6 @@ const navigation = [
 
 export default function Header() {
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
-
   const closeMobileMenu = useCallback(() => setMobileMenuOpen(false), []);
 
   // ESC ile kapama
@@ -29,11 +29,7 @@ export default function Header() {
   // Menü açıkken sayfa kaymasını kilitle
   useEffect(() => {
     const el = document.documentElement;
-    if (isMobileMenuOpen) {
-      el.style.overflow = "hidden";
-    } else {
-      el.style.overflow = "";
-    }
+    el.style.overflow = isMobileMenuOpen ? "hidden" : "";
     return () => {
       el.style.overflow = "";
     };
@@ -48,10 +44,27 @@ export default function Header() {
             className="flex items-center gap-3 text-lg font-semibold text-foreground transition-colors hover:text-primary sm:text-xl"
             aria-label="MTD Software anasayfası"
           >
-            <span className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-primary/15 text-base font-bold text-primary">
-              M
+            {/* Logo (tema bazlı swap) */}
+            <span className="relative inline-block h-9 w-[150px] sm:h-10 sm:w-[170px]">
+              {/* Light */}
+              <Image
+                src="/MTD_Logo.png"
+                alt="MTD Software"
+                fill
+                sizes="170px"
+                className="object-contain dark:hidden"
+                priority
+              />
+              {/* Dark */}
+              <Image
+                src="/MTD_Logo_Dark.png"
+                alt="MTD Software"
+                fill
+                sizes="170px"
+                className="hidden object-contain dark:block"
+                priority
+              />
             </span>
-            <span className="font-display text-2xl">MTD Software</span>
           </Link>
 
           {/* Masaüstü menü */}
@@ -112,17 +125,31 @@ export default function Header() {
           />
 
           {/* Opak panel */}
-          <div className="relative z-[1001] flex h-full w-[min(20rem,85%)] flex-col border-l border-muted/40 bg-white dark:bg-[#0b2036] px-5 py-6 shadow-2xl">
+          <div className="relative z-[1001] flex h-full w-[min(20rem,85%)] flex-col border-l border-muted/40 bg-white px-5 py-6 shadow-2xl dark:bg-[#0b2036]">
             <div className="flex items-center justify-between">
               <Link
                 href="/"
                 className="flex items-center gap-2 text-lg font-semibold text-foreground"
                 onClick={closeMobileMenu}
               >
-                <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-primary/15 text-sm font-bold text-primary">
-                  M
+                <span className="relative inline-block h-8 w-[135px]">
+                  <Image
+                    src="/MTD_Logo.png"
+                    alt="MTD Software"
+                    fill
+                    sizes="135px"
+                    className="object-contain dark:hidden"
+                    priority
+                  />
+                  <Image
+                    src="/MTD_Logo_Dark.png"
+                    alt="MTD Software"
+                    fill
+                    sizes="135px"
+                    className="hidden object-contain dark:block"
+                    priority
+                  />
                 </span>
-                <span className="font-display text-xl">MTD Software</span>
               </Link>
               <button
                 type="button"
