@@ -1,5 +1,5 @@
 import { MetadataRoute } from "next";
-import { projects } from "@/data/site";
+import { projects } from "@/data/projects";
 
 const baseUrl = "https://mtdsoftware.com";
 
