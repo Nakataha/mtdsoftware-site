@@ -83,14 +83,14 @@ export default function Header() {
       </div>
 
       {isMobileMenuOpen && (
-        <div className="fixed inset-0 z-[70] flex md:hidden" role="dialog" aria-modal="true">
+        <div className="fixed inset-0 z-[80] md:hidden" role="dialog" aria-modal="true">
           <button
             type="button"
             onClick={closeMobileMenu}
-            className="h-full w-full bg-[hsl(var(--mobile-menu-overlay))]"
+            className="hidden"
             aria-label="Menüyü kapat"
           />
-          <div className="relative flex h-full w-[min(20rem,85%)] flex-col border-l border-muted/40 bg-[hsl(var(--mobile-menu-surface))] px-5 py-6 shadow-2xl">
+          <div className="flex h-full w-full flex-col bg-white px-5 py-6 shadow-2xl dark:bg-[#0b2036]">
             <div className="flex items-center justify-between">
               <Link
                 href="/"
