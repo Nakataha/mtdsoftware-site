@@ -1,15 +1,27 @@
-import { MetadataRoute } from "next";
-import { projects } from "@/data/projects";
+import type { MetadataRoute } from "next";
+import projects from "@/data/projects"; // sende zaten var
 
-const baseUrl = "https://mtdsoftware.com";
+const baseUrl = "https://www.mtdsoftware.com.tr";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const staticRoutes = ["", "/hakkimizda", "/hizmetler", "/projeler", "/iletisim", "/kvkk", "/cerez"];
+  // Statik sayfalar
+  const staticRoutes = [
+    "/",               // anasayfa
+    "/hakkimizda",
+    "/hizmetler",
+    "/projeler",
+    "/iletisim",
+    "/kvkk",
+    "/cerez",
+  ];
 
-  const projectRoutes = projects.map((project) => `/projeler/${project.slug}`);
+  // Proje detay sayfaları (slug’ları data’dan geliyor)
+  const projectRoutes = projects.map((p) => `/projeler/${p.slug}`);
 
   return [...staticRoutes, ...projectRoutes].map((path) => ({
     url: `${baseUrl}${path}`,
     lastModified: new Date(),
+    changeFrequency: "weekly",
+    priority: path === "/" ? 1 : 0.8,
   }));
 }
