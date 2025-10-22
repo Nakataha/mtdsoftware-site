@@ -42,27 +42,25 @@ export default function Header() {
             className="flex items-center gap-3 text-lg font-semibold text-foreground transition-colors hover:text-primary sm:text-xl"
             aria-label="MTD Software anasayfası"
           >
-            {/* Logo — responsive ve tema bazlı */}
+            {/* Logo — sabit 300px (light/dark swap) */}
             <span className="inline-flex items-center">
-              {/* Light */}
               <Image
                 src="/MTD_Logo.png"
                 alt="MTD Software"
-                width={240}
-                height={64}
+                width={300}
+                height={80}
                 priority
-                className="h-9 w-[160px] sm:h-10 sm:w-[180px] lg:h-11 lg:w-[200px] object-contain dark:hidden"
-                sizes="(min-width:1024px) 200px, (min-width:640px) 180px, 160px"
+                sizes="300px"
+                className="h-auto w-[300px] object-contain dark:hidden"
               />
-              {/* Dark */}
               <Image
                 src="/MTD_Logo_Dark.png"
                 alt="MTD Software"
-                width={240}
-                height={64}
+                width={300}
+                height={80}
                 priority
-                className="hidden h-9 w-[160px] object-contain sm:h-10 sm:w-[180px] lg:h-11 lg:w-[200px] dark:block"
-                sizes="(min-width:1024px) 200px, (min-width:640px) 180px, 160px"
+                sizes="300px"
+                className="hidden h-auto w-[300px] object-contain dark:block"
               />
             </span>
           </Link>
@@ -124,38 +122,37 @@ export default function Header() {
             aria-label="Menüyü kapat"
           />
 
-          {/* Panel */}
-          <div className="relative z-[1001] flex h-full w-[min(20rem,85%)] flex-col border-l border-muted/40 bg-white px-5 py-6 shadow-2xl dark:bg-[#0b2036]">
-            <div className="flex items-center justify-between">
+          {/* Panel (biraz daha geniş; logo 240px) */}
+          <div className="relative z-[1001] flex h-full w-[min(22rem,90%)] flex-col border-l border-muted/40 bg-white px-5 py-6 shadow-2xl dark:bg-[#0b2036]">
+            <div className="flex items-center justify-between gap-2">
               <Link
                 href="/"
                 className="flex items-center gap-2 text-lg font-semibold text-foreground"
                 onClick={closeMobileMenu}
               >
-                {/* Mobil logo — aynı ölçekler */}
                 <Image
                   src="/MTD_Logo.png"
                   alt="MTD Software"
-                  width={220}
-                  height={60}
+                  width={240}
+                  height={64}
                   priority
-                  className="h-8 w-[135px] object-contain dark:hidden"
-                  sizes="135px"
+                  sizes="240px"
+                  className="h-auto w-[240px] object-contain dark:hidden"
                 />
                 <Image
                   src="/MTD_Logo_Dark.png"
                   alt="MTD Software"
-                  width={220}
-                  height={60}
+                  width={240}
+                  height={64}
                   priority
-                  className="hidden h-8 w-[135px] object-contain dark:block"
-                  sizes="135px"
+                  sizes="240px"
+                  className="hidden h-auto w-[240px] object-contain dark:block"
                 />
               </Link>
               <button
                 type="button"
                 onClick={closeMobileMenu}
-                className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-muted/60 text-foreground transition-colors hover:border-primary hover:text-primary"
+                className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-muted/60 text-foreground transition-colors hover:border-primary hover:text-primary"
                 aria-label="Menüyü kapat"
               >
                 <svg
