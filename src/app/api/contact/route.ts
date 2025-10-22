@@ -2,33 +2,29 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import nodemailer from "nodemailer";
+import SMTPTransport from "nodemailer/lib/smtp-transport";
 
-/** Nodemailer için Node runtime ve cache kapama */
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-/* =========================
-   Basit rate-limit (1dk/3)
-========================= */
+/* ===== Rate limit (1dk/3) ===== */
 const RATE_LIMIT = 3;
 const WINDOW_MS = 60 * 1000;
 const requests = new Map<string, { count: number; start: number }>();
+
+const JSON = (data: any, status = 200) =>
+  NextResponse.json(data, { status, headers: { "Cache-Control": "no-store" } });
 
 function getIp(req: NextRequest): string {
   return req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
 }
 
-/* =========================
-   Yardımcılar
-========================= */
-const JSON = (data: any, status = 200) =>
-  NextResponse.json(data, { status, headers: { "Cache-Control": "no-store" } });
-
+/* ===== Helpers ===== */
 function withTimeout<T>(p: Promise<T>, ms: number, label = "timeout"): Promise<T> {
   return new Promise<T>((resolve, reject) => {
     const id = setTimeout(() => reject(new Error(label)), ms);
-    p.then((v) => { clearTimeout(id); resolve(v); })
-     .catch((e) => { clearTimeout(id); reject(e); });
+    p.then(v => { clearTimeout(id); resolve(v); })
+     .catch(e => { clearTimeout(id); reject(e); });
   });
 }
 
@@ -38,65 +34,57 @@ function looksSpammy(text: string): boolean {
   const bad = /(casino|viagra|loan|roulette|porn|sex|crypto pump|bitcoin miner|telegram|whatsapp|forex|bet)/i.test(lower);
   return urlCount > 2 || bad;
 }
-
 function isEmail(s: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s);
 }
-
 function escapeHtml(input: string): string {
   return input.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
 
-/* =========================
-   Cloudflare Turnstile doğrulama
-   TURNSTILE_SECRET tanımlıysa token zorunlu
-========================= */
+/* ===== Turnstile (secret varsa zorunlu) ===== */
 async function verifyTurnstile(req: NextRequest, token?: string): Promise<boolean> {
   const secret = process.env.TURNSTILE_SECRET;
-  if (!secret) return true;      // Kapalıysa geç
-  if (!token) return false;      // Secret var ama token yok
+  if (!secret) return true;
+  if (!token) return false;
 
-  const form = new URLSearchParams();
-  form.append("secret", secret);
-  form.append("response", token);
-  form.append("remoteip", getIp(req));
+  const body = new URLSearchParams({
+    secret,
+    response: token,
+    remoteip: getIp(req),
+  }).toString();
 
   try {
     const res = await withTimeout(
       fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
         method: "POST",
         headers: { "content-type": "application/x-www-form-urlencoded" },
-        body: form.toString(),
+        body,
       }),
       8000,
       "turnstile timeout"
     );
     if (!res.ok) return false;
-    const data = (await res.json()) as { success?: boolean };
-    return !!data.success;
+    const json = (await res.json()) as { success?: boolean };
+    return !!json.success;
   } catch {
     return false;
   }
 }
 
-/* =========================
-   Types
-========================= */
+/* ===== Types ===== */
 type Body = {
   name: string;
   email: string;
   message: string;
   subject?: string;
   company?: string;
-  hp?: string; // honeypot (boş olmalı)
-  turnstileToken?: string;
+  hp?: string;               // honeypot
+  turnstileToken?: string;   // cf-turnstile-response
 };
 
-/* =========================
-   POST /api/contact
-========================= */
+/* ===== POST /api/contact ===== */
 export async function POST(req: NextRequest) {
-  // --- rate limit
+  // rate-limit
   const ip = getIp(req);
   const now = Date.now();
   const entry = requests.get(ip);
@@ -109,7 +97,7 @@ export async function POST(req: NextRequest) {
     entry.count++;
   }
 
-  // --- env
+  // ENV
   const {
     SMTP_HOST,
     SMTP_PORT,
@@ -136,37 +124,40 @@ export async function POST(req: NextRequest) {
     const hp = (body.hp || "").trim();
     const turnstileToken = body.turnstileToken;
 
-    // --- honeypot: doluysa sessizce başarılı dön (mail gönderme)
+    // honeypot: doluysa sessizce başarılı dön
     if (hp) return JSON({ success: true });
 
-    // --- turnstile: secret varsa zorunlu
+    // Turnstile
     const human = await verifyTurnstile(req, turnstileToken);
     if (!human) return JSON({ success: false, message: "Doğrulama başarısız." }, 400);
 
-    // --- validation
+    // validation
     if (!name || !email || !message) return JSON({ success: false, message: "Tüm alanlar zorunludur." }, 400);
     if (!isEmail(email)) return JSON({ success: false, message: "Geçerli bir e-posta girin." }, 400);
     if (message.length > 1500) return JSON({ success: false, message: "Mesaj çok uzun." }, 400);
     if (looksSpammy(`${name} ${email} ${subject} ${company} ${message}`)) {
-      // Sessiz drop
-      return JSON({ success: true });
+      return JSON({ success: true }); // sessiz drop
     }
 
-    // --- transporter (Zoho / SMTP) + timeout’lar
-    const transporter = nodemailer.createTransport({
-      host: SMTP_HOST,
-      port: Number(SMTP_PORT),
-      secure: (SMTP_SECURE || "false") === "true", // 465:true, 587:false (STARTTLS)
+    /* ===== Nodemailer (Zoho) — SMTPTransport.Options tipi ===== */
+    const transportOptions: SMTPTransport.Options = {
+      host: SMTP_HOST,                                // örn: smtp.zoho.eu
+      port: Number(SMTP_PORT),                        // 587 (STARTTLS) veya 465 (SSL)
+      secure: (SMTP_SECURE || "false") === "true",    // 465:true, 587:false
       auth: { user: SMTP_USER, pass: SMTP_PASS },
-      pool: true,
-      maxConnections: 2,
-      connectionTimeout: 10_000,   // TCP connect
-      greetingTimeout: 6_000,      // SMTP greeting
-      socketTimeout: 12_000,       // idle socket
-    });
+      // timeoutlar — kilitlenmeyi önler
+      connectionTimeout: 10_000,
+      greetingTimeout: 6_000,
+      socketTimeout: 12_000,
+      // 587 kullanıyorsan STARTTLS'i zorla
+      requireTLS: (SMTP_SECURE || "false") !== "true",
+      tls: {
+        servername: SMTP_HOST,
+        rejectUnauthorized: true,
+      },
+    };
 
-    // Bağlantı testi (timeout ile)
-    await withTimeout(transporter.verify(), 8_000, "smtp verify timeout");
+    const transporter = nodemailer.createTransport(transportOptions);
 
     const from = MAIL_FROM || `MTD Software <${SMTP_USER}>`;
     const to = MAIL_TO || SMTP_USER;
@@ -175,7 +166,6 @@ export async function POST(req: NextRequest) {
       ? `Yeni İletişim — ${subject} — ${name}`
       : `Yeni İletişim — ${name}`;
 
-    // Plain text (forward/search için iyi)
     const plain = [
       `👤 Ad Soyad : ${name}`,
       `✉️ E-posta : ${email}`,
@@ -187,7 +177,6 @@ export async function POST(req: NextRequest) {
       message,
     ].filter(Boolean).join("\n");
 
-    // HTML — okunabilir şablon
     const html = `
       <div style="font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial,sans-serif;line-height:1.6;color:#0b253c">
         <div style="background:#0d2a46;color:#fff;padding:16px 20px;border-radius:14px 14px 0 0">
@@ -215,19 +204,14 @@ export async function POST(req: NextRequest) {
       </div>
     `;
 
-    // Mail gönder (timeout ile)
+    // Sadece sendMail (verify yok) — timeout’lu
     await withTimeout(
-      transporter.sendMail({
-        from,
-        to,
-        replyTo: email,
-        subject: mailSubject,
-        text: plain,
-        html,
-      }),
+      transporter.sendMail({ from, to, replyTo: email, subject: mailSubject, text: plain, html }),
       12_000,
       "smtp send timeout"
     );
+
+    try { transporter.close(); } catch {}
 
     return JSON({ success: true }, 200);
   } catch (err: any) {
