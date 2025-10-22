@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { projects, services } from "@/data/site";
+import { services } from "@/data/site";
+import { projects } from "@/data/projects";
 
 export const metadata: Metadata = {
   title: "Anasayfa",
@@ -117,12 +118,8 @@ export default function HomePage() {
                   Sade görseller için placeholder
                 </div>
                 <div className="flex flex-1 flex-col gap-4">
-                  <div className="flex items-center justify-between text-xs uppercase tracking-wide text-foreground/60">
-                    <span>{project.year}</span>
-                    <span>{project.role}</span>
-                  </div>
                   <h3 className="font-display text-2xl font-semibold text-foreground">{project.title}</h3>
-                  <p className="text-sm text-foreground/70">{project.summary}</p>
+                  <p className="text-sm text-foreground/70">{project.excerpt}</p>
                   <Link
                     href={`/projeler/${project.slug}`}
                     className="mt-auto inline-flex items-center text-sm font-semibold text-primary transition-colors hover:text-primary/80"
