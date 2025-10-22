@@ -1,11 +1,11 @@
 @import "tailwindcss";
 
 :root {
-  --background: 0 0% 100%;
-  --foreground: 209 69% 16%;
-  --primary: 212 100% 56%;
-  --muted: 210 33% 96%;
-  --muted-foreground: 209 17% 35%;
+  --background: 221 44% 97%;
+  --foreground: 225 57% 12%;
+  --primary: 222 88% 55%;
+  --muted: 220 24% 92%;
+  --muted-foreground: 226 22% 42%;
   --font-sans: "Inter", system-ui, -apple-system, sans-serif;
   --font-display: "Space Grotesk", "Inter", system-ui, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
@@ -13,11 +13,11 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: 209 69% 16%;
-    --foreground: 210 40% 96%;
-    --primary: 212 100% 56%;
-    --muted: 209 37% 22%;
-    --muted-foreground: 210 24% 74%;
+    --background: 222 47% 9%;
+    --foreground: 220 33% 96%;
+    --primary: 199 94% 55%;
+    --muted: 222 34% 16%;
+    --muted-foreground: 219 18% 72%;
   }
 }
 

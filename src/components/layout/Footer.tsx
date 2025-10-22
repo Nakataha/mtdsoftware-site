@@ -7,33 +7,33 @@ const legalLinks = [
 
 export default function Footer() {
   return (
-    <footer className="border-t border-muted/40 bg-background/95">
-      <div className="container flex flex-col gap-8 py-12 text-sm text-foreground/70 md:flex-row md:justify-between">
-        <div className="max-w-md space-y-3">
-          <p className="font-display text-xl font-semibold text-foreground">
-            MTD Software
-          </p>
+    <footer className="border-t border-muted/30 bg-background/95">
+      <div className="container mx-auto flex max-w-6xl flex-col gap-10 py-14 text-sm text-foreground/70 md:flex-row md:items-start md:justify-between">
+        <div className="max-w-md space-y-4">
+          <div className="flex items-center gap-3">
+            <span className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-primary/15 text-lg font-semibold text-primary">
+              MTD
+            </span>
+            <p className="font-display text-2xl font-semibold text-foreground">MTD Software</p>
+          </div>
           <p>
-            Modern web projeleri, SaaS ürünleri ve teknik danışmanlık sunan freelance
-            yazılım geliştiricisi.
+            Modern web projeleri, SaaS ürünleri ve teknik danışmanlıkla ekiplerinizi güçlendiren freelance yazılım geliştiricisi.
           </p>
           <div className="flex flex-wrap gap-4 text-foreground/60">
-            <Link href="mailto:info@mtdsoftware.com" className="hover:text-primary">
+            <Link href="mailto:info@mtdsoftware.com" className="transition-colors hover:text-primary">
               info@mtdsoftware.com
             </Link>
             <span className="hidden md:inline" aria-hidden="true">
               ·
             </span>
-            <Link href="tel:+905551112233" className="hover:text-primary">
+            <Link href="tel:+905551112233" className="transition-colors hover:text-primary">
               +90 555 111 22 33
             </Link>
           </div>
         </div>
-        <div className="space-y-4">
-          <p className="text-xs uppercase tracking-wide text-foreground/50">
-            Kurumsal
-          </p>
-          <ul className="space-y-2">
+        <div className="space-y-5">
+          <p className="text-xs uppercase tracking-wide text-foreground/50">Kurumsal</p>
+          <ul className="grid gap-3 text-foreground/70 sm:grid-cols-2 md:flex md:flex-col">
             <li>
               <Link href="/projeler" className="transition-colors hover:text-primary">
                 Projeler

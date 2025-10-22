@@ -11,6 +11,7 @@ export interface Project {
   problem: string;
   solution: string;
   result: string;
+  industry?: string;
   technologies: string[];
   roles: string[];
   links?: ProjectLink[];
@@ -22,6 +23,7 @@ export const projects: Project[] = [
     title: "Asdem Yapı — Kurumsal Site Revizyonu",
     excerpt:
       "Çok dilli, koyu/açık tema, performans ve güvenlik odaklı yeni arayüz; WordPress üzerine özel geliştirmeler.",
+    industry: "İnşaat & Gayrimenkul",
     summary:
       "Aile şirketimizin kurumsal web sitesini WordPress + Kadence altyapısı üzerinde yeniden tasarladım; çok dilli içerik, tema geçişi ve Lighthouse 90+ skorlarını hedefleyen optimizasyonlar uyguladım.",
     problem:
@@ -38,6 +40,7 @@ export const projects: Project[] = [
     title: "Atay Sigorta — Teklif Toplayıcı (POC)",
     excerpt:
       "Oturum yönetimi, çoklu firma akışı ve sonuç paneli sunan sigorta teklif toplayıcı POC.",
+    industry: "Finans & Sigorta",
     summary:
       "Sigorta acenteleri için farklı firmalardaki teklif formlarını tek panelde toplayan bir POC geliştirdim; oturum yönetimi ve sonuç paneliyle süreç izlenebilir hale geldi.",
     problem:
@@ -54,6 +57,7 @@ export const projects: Project[] = [
     title: "Galeri Otomasyon — Envanter Takibi",
     excerpt:
       "Araç ilan senkronizasyonu, raporlar ve kullanıcı rolleri bulunan envanter takip sistemi.",
+    industry: "Otomotiv",
     summary:
       "Galerinin tüm araç stoğunu merkezi bir panelden yönetmesini sağlayan Node.js tabanlı envanter sistemi kurdum; ilan platformlarıyla senkronizasyon ve çok seviyeli yetkilendirme sağladım.",
     problem:
@@ -70,6 +74,7 @@ export const projects: Project[] = [
     title: "CSV→DB Portalı",
     excerpt:
       "CSV içe aktarım, doğrulama, tablo görüntüleme ve dışa aktarma işlevlerine sahip web portalı.",
+    industry: "Operasyon & Veri",
     summary:
       "Ofis ekibinin Excel dosyalarını güvenle veritabanına aktarması için Next.js tabanlı bir portal geliştirdim; doğrulama adımları ve tablo görünümleri ile süreç izlenebilir hale geldi.",
     problem:
