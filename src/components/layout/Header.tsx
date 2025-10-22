@@ -30,11 +30,12 @@ export default function Header() {
   }, [closeMobileMenu, isMobileMenuOpen]);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-muted/30 bg-background/90 backdrop-blur">
-      <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
+    <header className="sticky top-0 z-50 border-b border-muted/30 bg-background/95 shadow-sm backdrop-blur">
+      <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-3 sm:px-6">
         <Link
           href="/"
           className="flex items-center gap-3 text-lg font-semibold text-foreground transition-colors hover:text-primary sm:text-xl"
+          aria-label="MTD Software anasayfası"
         >
           <span className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-primary/15 text-base font-bold text-primary">
             M
@@ -89,7 +90,7 @@ export default function Header() {
             className="h-full w-full bg-foreground/30 backdrop-blur-sm"
             aria-label="Menüyü kapat"
           />
-          <div className="relative flex h-full w-72 max-w-[85%] flex-col border-l border-muted/40 bg-background px-5 py-6 shadow-2xl">
+          <div className="relative flex h-full w-[min(20rem,85%)] flex-col border-l border-muted/40 bg-background px-5 py-6 shadow-2xl">
             <div className="flex items-center justify-between">
               <Link
                 href="/"
