@@ -24,7 +24,7 @@ function looksSpammy(text: string): boolean {
   const lower = text.toLowerCase();
   const urlCount = (lower.match(/https?:\/\//g) || []).length;
   const bad =
-    /(casino|viagra|loan|roulette|porn|sex|crypto pump|bitcoin miner|telegram)/i.test(
+    /(casino|viagra|loan|roulette|porn|sex|crypto pump|bitcoin miner|telegram|whatsapp|forex|bet)/i.test(
       lower
     );
   return urlCount > 2 || bad;
@@ -34,9 +34,16 @@ function isEmail(s: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s);
 }
 
+function escapeHtml(input: string): string {
+  return input
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+
 /* =========================
-   Cloudflare Turnstile doğrulama (opsiyonel)
-   TURNSTILE_SECRET tanımlıysa token İSTENİR.
+   Cloudflare Turnstile doğrulama
+   TURNSTILE_SECRET tanımlıysa token zorunlu
 ========================= */
 async function verifyTurnstile(
   req: NextRequest,
@@ -64,7 +71,7 @@ async function verifyTurnstile(
 }
 
 /* =========================
-   POST /api/contact
+   Types
 ========================= */
 type Body = {
   name: string;
@@ -76,8 +83,11 @@ type Body = {
   turnstileToken?: string;
 };
 
+/* =========================
+   POST /api/contact
+========================= */
 export async function POST(req: NextRequest) {
-  // rate limit
+  // --- rate limit
   const ip = getIp(req);
   const now = Date.now();
   const entry = requests.get(ip);
@@ -93,7 +103,7 @@ export async function POST(req: NextRequest) {
     entry.count++;
   }
 
-  // env
+  // --- env
   const {
     SMTP_HOST,
     SMTP_PORT,
@@ -105,7 +115,6 @@ export async function POST(req: NextRequest) {
   } = process.env;
 
   if (!SMTP_HOST || !SMTP_PORT || !SMTP_USER || !SMTP_PASS) {
-    // eslint-disable-next-line no-console
     console.error("CONTACT_ERROR: Missing SMTP configuration");
     return NextResponse.json(
       { success: false, message: "Mesaj gönderilemedi." },
@@ -123,10 +132,10 @@ export async function POST(req: NextRequest) {
     const hp = (body.hp || "").trim();
     const turnstileToken = body.turnstileToken;
 
-    // honeypot: doluysa sessizce başarılı dön (mail gönderme)
+    // --- honeypot: doluysa sessizce başarılı dön (mail gönderme)
     if (hp) return NextResponse.json({ success: true });
 
-    // turnstile: secret varsa zorunlu
+    // --- turnstile: secret varsa zorunlu
     const human = await verifyTurnstile(req, turnstileToken);
     if (!human) {
       return NextResponse.json(
@@ -135,7 +144,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // server-side validation
+    // --- validation
     if (!name || !email || !message) {
       return NextResponse.json(
         { success: false, message: "Tüm alanlar zorunludur." },
@@ -158,7 +167,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: true }); // sessiz drop
     }
 
-    // transporter (Zoho/SMTP)
+    // --- transporter (Zoho / SMTP)
     const transporter = nodemailer.createTransport({
       host: SMTP_HOST,
       port: Number(SMTP_PORT),
@@ -166,34 +175,80 @@ export async function POST(req: NextRequest) {
       auth: { user: SMTP_USER, pass: SMTP_PASS },
     });
 
-    // bağlantı testi (hata logda görünür)
+    // Bağlantı testi
     await transporter.verify();
 
     const from = MAIL_FROM || `MTD Software <${SMTP_USER}>`;
     const to = MAIL_TO || SMTP_USER;
 
-    const finalSubject =
-      subject
-        ? `İletişim Formu — ${subject} — ${name}`
-        : `İletişim Formu — ${name}`;
+    const mailSubject =
+      subject ? `Yeni İletişim — ${subject} — ${name}` : `Yeni İletişim — ${name}`;
 
+    // Plain text (kolay arama/forward için iyi olur)
     const plain = [
-      `Kimden: ${name} <${email}>`,
-      company ? `Şirket/Organizasyon: ${company}` : "",
-      `IP: ${ip}`,
+      `👤 Ad Soyad : ${name}`,
+      `✉️ E-posta : ${email}`,
+      company ? `🏢 Şirket  : ${company}` : "",
+      subject ? `📝 Konu    : ${subject}` : "",
+      `🌐 IP       : ${ip}`,
       "",
+      "Mesaj:",
       message,
     ]
       .filter(Boolean)
       .join("\n");
 
+    // HTML şablon (daha okunur)
     const html = `
-      <div style="font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI">
-        <p><strong>Kimden:</strong> ${name} &lt;${email}&gt;</p>
-        ${company ? `<p><strong>Şirket/Organizasyon:</strong> ${company}</p>` : ""}
-        <p style="color:#6b7280;font-size:12px;margin:0">IP: ${ip}</p>
-        <hr style="border:none;border-top:1px solid #e5e7eb;margin:12px 0" />
-        <pre style="white-space:pre-wrap;font:inherit;margin:0">${message}</pre>
+      <div style="font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI; color:#0b253c;">
+        <div style="background:#0d2a46; color:#fff; padding:16px 20px; border-radius:14px 14px 0 0;">
+          <div style="font-weight:700; font-size:16px;">MTD Software — İletişim Formu</div>
+          <div style="opacity:.8; font-size:12px; margin-top:2px;">Yeni mesaj bildirimi</div>
+        </div>
+
+        <div style="border:1px solid #e5e7eb; border-top:none; border-radius:0 0 14px 14px; padding:18px;">
+          <table style="width:100%; border-collapse:collapse; font-size:14px;">
+            <tbody>
+              <tr>
+                <td style="padding:8px 0; width:140px; color:#64748b;">Ad Soyad</td>
+                <td style="padding:8px 0;"><strong>${escapeHtml(name)}</strong></td>
+              </tr>
+              <tr>
+                <td style="padding:8px 0; color:#64748b;">E-posta</td>
+                <td style="padding:8px 0;"><a href="mailto:${escapeHtml(email)}">${escapeHtml(
+      email
+    )}</a></td>
+              </tr>
+              ${
+                company
+                  ? `<tr><td style="padding:8px 0; color:#64748b;">Şirket</td><td style="padding:8px 0;">${escapeHtml(
+                      company
+                    )}</td></tr>`
+                  : ""
+              }
+              ${
+                subject
+                  ? `<tr><td style="padding:8px 0; color:#64748b;">Konu</td><td style="padding:8px 0;">${escapeHtml(
+                      subject
+                    )}</td></tr>`
+                  : ""
+              }
+              <tr>
+                <td style="padding:8px 0; color:#64748b;">IP</td>
+                <td style="padding:8px 0;">${escapeHtml(ip)}</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div style="margin:16px 0 8px; font-weight:600; color:#0b253c;">Mesaj</div>
+          <div style="white-space:pre-wrap; background:#f8fafc; border:1px solid #e5e7eb; border-radius:10px; padding:12px; line-height:1.6;">
+            ${escapeHtml(message)}
+          </div>
+
+          <div style="margin-top:14px; font-size:12px; color:#64748b;">
+            Cevaplamak için: <a href="mailto:${escapeHtml(email)}">yanıtla</a>
+          </div>
+        </div>
       </div>
     `;
 
@@ -201,7 +256,7 @@ export async function POST(req: NextRequest) {
       from,
       to,
       replyTo: email,
-      subject: finalSubject,
+      subject: mailSubject,
       text: plain,
       html,
     });
@@ -209,7 +264,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ success: true });
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : String(err);
-    // eslint-disable-next-line no-console
     console.error("CONTACT_ERROR:", msg);
     return NextResponse.json(
       { success: false, message: "Mesaj gönderilemedi." },
