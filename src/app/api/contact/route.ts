@@ -28,7 +28,9 @@ export async function POST(req: NextRequest) {
 
   const { SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, CONTACT_TO } =
     process.env;
-  if (!SMTP_HOST || !SMTP_PORT || !SMTP_USER || !SMTP_PASS || !CONTACT_TO) {
+  const contactTo = CONTACT_TO || "info@mtdsoftware.com.tr";
+
+  if (!SMTP_HOST || !SMTP_PORT || !SMTP_USER || !SMTP_PASS) {
     console.error("Missing SMTP configuration");
     return NextResponse.json(
       { success: false, message: "Mesaj gönderilemedi." },
@@ -60,7 +62,7 @@ export async function POST(req: NextRequest) {
 
     await transporter.sendMail({
       from: SMTP_USER,
-      to: CONTACT_TO,
+      to: contactTo,
       replyTo: email,
       subject: `İletişim Formu: ${name}`,
       text: message,

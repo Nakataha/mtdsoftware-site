@@ -198,10 +198,10 @@ export default function HomePage() {
                 İletişim Formu
               </Link>
               <Link
-                href="mailto:info@mtdsoftware.com"
+                href="mailto:info@mtdsoftware.com.tr"
                 className="inline-flex items-center justify-center rounded-full border border-primary/40 px-7 py-3 text-sm font-semibold text-primary transition-colors hover:bg-primary/10"
               >
-                info@mtdsoftware.com
+                info@mtdsoftware.com.tr
               </Link>
             </div>
           </div>
