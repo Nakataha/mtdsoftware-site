@@ -9,8 +9,8 @@
   --font-sans: "Inter", system-ui, -apple-system, sans-serif;
   --font-display: "Space Grotesk", "Inter", system-ui, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-  --mobile-menu-overlay: 221 57% 95%;
-  --mobile-menu-surface: 222 44% 92%;
+  --mobile-menu-overlay: 0 0% 0% / 0.6;
+  --mobile-menu-surface: 0 0% 100%;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -20,8 +20,8 @@
     --primary: 199 94% 55%;
     --muted: 222 34% 16%;
     --muted-foreground: 219 18% 72%;
-    --mobile-menu-overlay: 221 63% 4%;
-    --mobile-menu-surface: 222 54% 10%;
+    --mobile-menu-overlay: 0 0% 0% / 0.7;
+    --mobile-menu-surface: 222 54% 12%;
   }
 }
 

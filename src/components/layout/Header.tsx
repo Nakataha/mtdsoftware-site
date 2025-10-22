@@ -83,7 +83,7 @@ export default function Header() {
       </div>
 
       {isMobileMenuOpen && (
-        <div className="fixed inset-0 z-50 flex md:hidden" role="dialog" aria-modal="true">
+        <div className="fixed inset-0 z-[70] flex md:hidden" role="dialog" aria-modal="true">
           <button
             type="button"
             onClick={closeMobileMenu}
