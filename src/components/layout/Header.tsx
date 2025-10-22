@@ -87,10 +87,10 @@ export default function Header() {
           <button
             type="button"
             onClick={closeMobileMenu}
-            className="h-full w-full bg-[hsl(var(--mobile-menu-overlay))]"
+            className="h-full w-full bg-black/60"
             aria-label="Menüyü kapat"
           />
-          <div className="relative flex h-full w-[min(20rem,85%)] flex-col border-l border-muted/40 bg-[hsl(var(--mobile-menu-surface))] px-5 py-6 shadow-2xl">
+          <div className="relative flex h-full w-[min(20rem,85%)] flex-col border-l border-muted/40 bg-white dark:bg-[#0b2036] px-5 py-6 shadow-2xl">
             <div className="flex items-center justify-between">
               <Link
                 href="/"
