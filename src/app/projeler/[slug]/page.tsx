@@ -8,6 +8,8 @@ interface ProjectPageProps {
   params: { slug: string };
 }
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.mtdsoftware.com.tr";
+
 export function generateStaticParams() {
   return projects.map((project) => ({ slug: project.slug }));
 }
@@ -21,6 +23,9 @@ export function generateMetadata({ params }: ProjectPageProps): Metadata {
     };
   }
 
+  const canonical = `/projeler/${project.slug}`;
+  const ogImage = `/og?title=${encodeURIComponent(project.title)}&subtitle=${encodeURIComponent(project.summary)}`;
+
   return {
     title: project.title,
     description: project.summary,
@@ -28,6 +33,24 @@ export function generateMetadata({ params }: ProjectPageProps): Metadata {
       title: project.title,
       description: project.summary,
       type: "article",
+      url: `${siteUrl}${canonical}`,
+      images: [
+        {
+          url: ogImage,
+          width: 1200,
+          height: 630,
+          alt: project.title,
+        },
+      ],
+    },
+    alternates: {
+      canonical,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: project.title,
+      description: project.summary,
+      images: [ogImage],
     },
   };
 }

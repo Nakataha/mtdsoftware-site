@@ -57,7 +57,6 @@ export default function Header() {
                 alt="MTD Software"
                 width={150}
                 height={50}
-                priority
                 sizes="(min-width:1024px) 150px, (min-width:640px) 140px, 110px"
                 className="hidden h-auto w-[110px] sm:w-[140px] lg:w-[150px] object-contain dark:block"
               />
@@ -134,7 +133,6 @@ export default function Header() {
                   alt="MTD Software"
                   width={110}
                   height={25}
-                  priority
                   className="h-auto w-[110px] object-contain dark:hidden"
                 />
                 <Image
@@ -142,7 +140,6 @@ export default function Header() {
                   alt="MTD Software"
                   width={110}
                   height={25}
-                  priority
                   className="hidden h-auto w-[110px] object-contain dark:block"
                 />
               </Link>
