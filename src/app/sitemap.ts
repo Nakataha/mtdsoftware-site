@@ -1,7 +1,8 @@
 import type { MetadataRoute } from "next";
 import { projects } from "@/data/projects"; // <-- default değil, named
 
-const baseUrl = "https://www.mtdsoftware.com.tr";
+const fallbackSiteUrl = "https://www.mtdsoftware.com.tr";
+const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? fallbackSiteUrl;
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const staticRoutes = [
@@ -10,6 +11,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/hizmetler",
     "/projeler",
     "/iletisim",
+    "/gizlilik",
+    "/cerez",
+    "/kullanim-sartlari",
+    "/kvkk",
   ];
 
   const projectRoutes =

@@ -4,6 +4,9 @@ import Link from "next/link";
 import Breadcrumbs from "@/components/breadcrumbs";
 import { projects } from "@/data/projects";
 
+const fallbackSiteUrl = "https://www.mtdsoftware.com.tr";
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? fallbackSiteUrl;
+
 interface ProjectPageProps {
   params: { slug: string };
 }
@@ -21,13 +24,34 @@ export function generateMetadata({ params }: ProjectPageProps): Metadata {
     };
   }
 
+  const ogImage = `/og?title=${encodeURIComponent(project.title)}&subtitle=${encodeURIComponent(project.excerpt)}`;
+  const canonicalPath = `/projeler/${project.slug}`;
+
   return {
     title: project.title,
     description: project.summary,
+    alternates: {
+      canonical: canonicalPath,
+    },
     openGraph: {
       title: project.title,
       description: project.summary,
       type: "article",
+      url: `${siteUrl}${canonicalPath}`,
+      images: [
+        {
+          url: ogImage,
+          width: 1200,
+          height: 630,
+          alt: project.title,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: project.title,
+      description: project.summary,
+      images: [ogImage],
     },
   };
 }
