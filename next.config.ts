@@ -1,16 +1,31 @@
+import crypto from "crypto";
 import type { NextConfig } from "next";
+
+import { inlineScripts } from "./src/security/inline-content";
+
+const scriptHashes = Object.values(inlineScripts).map((content) =>
+  `sha256-${crypto.createHash("sha256").update(content).digest("base64")}`
+);
 
 const cspDirectives = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com",
-  "style-src 'self' 'unsafe-inline'",
+  [
+    "script-src",
+    "'self'",
+    "https://challenges.cloudflare.com",
+    "https://*.turnstilecaptcha.com",
+    ...scriptHashes,
+  ].join(" "),
+  "style-src 'self'",
   "img-src 'self' data:",
-  "font-src 'self'",
+  "font-src 'self' data:",
   "connect-src 'self' https://challenges.cloudflare.com https://*.turnstilecaptcha.com",
-  "frame-src https://challenges.cloudflare.com https://*.turnstilecaptcha.com",
-  "form-action 'self'",
-  "base-uri 'self'",
+  "frame-src 'self' https://challenges.cloudflare.com https://*.turnstilecaptcha.com",
+  "worker-src 'self'",
+  "media-src 'none'",
   "object-src 'none'",
+  "base-uri 'self'",
+  "form-action 'self'",
   "frame-ancestors 'none'",
   "upgrade-insecure-requests",
 ];
@@ -34,7 +49,8 @@ const securityHeaders = [
   },
   {
     key: "Permissions-Policy",
-    value: "camera=(), microphone=(), geolocation=(), payment=()",
+    value:
+      "accelerometer=(), ambient-light-sensor=(), autoplay=(), camera=(), cross-origin-isolated=(), display-capture=(), encrypted-media=(), fullscreen=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), midi=(), payment=(), picture-in-picture=(), publickey-credentials-get=(), sync-xhr=(), usb=(), xr-spatial-tracking=()",
   },
   {
     key: "Content-Security-Policy",
