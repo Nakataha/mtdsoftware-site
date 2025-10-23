@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
+import { headers } from "next/headers";
 import Script from "next/script";
+
+import { CSP_NONCE_HEADER_NAME } from "@/lib/security/csp";
 import BriefForm from "./BriefForm";
 
 const fallbackSiteUrl = "https://www.mtdsoftware.com.tr";
@@ -38,13 +41,17 @@ export const metadata: Metadata = {
   },
 };
 
-export default function BriefIntakePage() {
+export default async function BriefIntakePage() {
+  const headerList = await headers();
+  const cspNonce = headerList.get(CSP_NONCE_HEADER_NAME) ?? undefined;
+
   return (
     <>
       <Script
         src="https://challenges.cloudflare.com/turnstile/v0/api.js"
         strategy="afterInteractive"
         defer
+        nonce={cspNonce}
       />
       <section className="bg-background">
         <div className="container mx-auto flex max-w-4xl flex-col gap-10 py-24">

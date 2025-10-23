@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
+import { headers } from "next/headers";
+
 import Footer from "@/components/layout/Footer";
 import Header from "@/components/layout/Header";
 import SeoJsonLd from "@/components/SeoJsonLd";
+import { CSP_NONCE_HEADER_NAME } from "@/lib/security/csp";
 import { inter, spaceGrotesk } from "./fonts";
 import "./globals.css";
 
@@ -55,12 +58,14 @@ export const metadata: Metadata = {
   },
 };
 
-
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const headerList = await headers();
+  const cspNonce = headerList.get(CSP_NONCE_HEADER_NAME) ?? undefined;
+
   return (
     <html
       lang="tr"
@@ -72,7 +77,7 @@ export default function RootLayout({
           <main className="flex-1">{children}</main>
           <Footer />
         </div>
-        <SeoJsonLd />
+        <SeoJsonLd nonce={cspNonce} />
       </body>
     </html>
   );
