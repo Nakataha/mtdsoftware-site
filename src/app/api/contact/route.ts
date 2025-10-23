@@ -3,6 +3,7 @@ import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import nodemailer from "nodemailer";
 import SMTPTransport from "nodemailer/lib/smtp-transport";
+import { verifyTurnstile } from "@/security/turnstile";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -39,36 +40,6 @@ function isEmail(s: string): boolean {
 }
 function escapeHtml(input: string): string {
   return input.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-}
-
-/* ===== Turnstile (secret varsa zorunlu) ===== */
-async function verifyTurnstile(req: NextRequest, token?: string): Promise<boolean> {
-  const secret = process.env.TURNSTILE_SECRET;
-  if (!secret) return true;
-  if (!token) return false;
-
-  const body = new URLSearchParams({
-    secret,
-    response: token,
-    remoteip: getIp(req),
-  }).toString();
-
-  try {
-    const res = await withTimeout(
-      fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
-        method: "POST",
-        headers: { "content-type": "application/x-www-form-urlencoded" },
-        body,
-      }),
-      8000,
-      "turnstile timeout"
-    );
-    if (!res.ok) return false;
-    const json = (await res.json()) as { success?: boolean };
-    return !!json.success;
-  } catch {
-    return false;
-  }
 }
 
 /* ===== Types ===== */
@@ -128,8 +99,11 @@ export async function POST(req: NextRequest) {
     if (hp) return JSON({ success: true });
 
     // Turnstile
-    const human = await verifyTurnstile(req, turnstileToken);
-    if (!human) return JSON({ success: false, message: "Doğrulama başarısız." }, 400);
+    const remoteIp = ip === "unknown" ? undefined : ip;
+    const verification = await verifyTurnstile(turnstileToken, remoteIp);
+    if (!verification.success) {
+      return JSON({ success: false, message: verification.message }, verification.status);
+    }
 
     // validation
     if (!name || !email || !message) return JSON({ success: false, message: "Tüm alanlar zorunludur." }, 400);
