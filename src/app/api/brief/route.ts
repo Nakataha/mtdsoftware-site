@@ -1,7 +1,6 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
-
-const VERIFY_ENDPOINT = "https://challenges.cloudflare.com/turnstile/v0/siteverify";
+import { verifyTurnstile } from "@/security/turnstile";
 
 const JSON = (data: unknown, status = 200) =>
   NextResponse.json(data, { status, headers: { "Cache-Control": "no-store" } });
@@ -36,38 +35,10 @@ export async function POST(req: NextRequest) {
     return JSON({ success: false, message: "Tüm alanları doldurun." }, 400);
   }
 
-  if (!token) {
-    return JSON({ success: false, message: "Doğrulama gerekli." }, 400);
-  }
-
-  const secret = process.env.TURNSTILE_SECRET;
-  if (!secret) {
-    return JSON({ success: false, message: "Doğrulama yapılandırılmamış." }, 400);
-  }
-
-  const formData = new URLSearchParams({
-    secret,
-    response: token,
-    remoteip: getIp(req),
-  });
-
-  try {
-    const res = await fetch(VERIFY_ENDPOINT, {
-      method: "POST",
-      body: formData,
-      headers: { "content-type": "application/x-www-form-urlencoded" },
-    });
-
-    if (!res.ok) {
-      return JSON({ success: false, message: "Doğrulama başarısız." }, 400);
-    }
-
-    const outcome = (await res.json()) as { success?: boolean };
-    if (!outcome.success) {
-      return JSON({ success: false, message: "Doğrulama başarısız." }, 400);
-    }
-  } catch {
-    return JSON({ success: false, message: "Doğrulama tamamlanamadı." }, 400);
+  const remoteIp = getIp(req);
+  const verification = await verifyTurnstile(token, remoteIp === "unknown" ? undefined : remoteIp);
+  if (!verification.success) {
+    return JSON({ success: false, message: verification.message }, verification.status);
   }
 
   return JSON({ success: true });
