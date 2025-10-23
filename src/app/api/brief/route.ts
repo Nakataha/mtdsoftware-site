@@ -1,16 +1,21 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
+import rateLimit, { getClientIp } from "@/lib/rateLimit";
 import { verifyTurnstile } from "@/security/turnstile";
 
 const JSON = (data: unknown, status = 200) =>
   NextResponse.json(data, { status, headers: { "Cache-Control": "no-store" } });
 
 function getIp(req: NextRequest): string {
-  return req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
+  return getClientIp(req);
 }
 
 export async function POST(req: NextRequest) {
-  // TODO: rate limit requests
+  // Rate limit entry point for tests
+  if (!rateLimit(req)) {
+    return JSON({ error: "Too many requests" }, 429);
+  }
+
   let body: {
     name?: string;
     email?: string;
