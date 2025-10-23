@@ -1,19 +1,17 @@
 import type { Metadata } from "next";
-import { Inter, Space_Grotesk } from "next/font/google";
 import Footer from "@/components/layout/Footer";
 import Header from "@/components/layout/Header";
+import SeoJsonLd from "@/components/SeoJsonLd";
+import { inter, spaceGrotesk } from "./fonts";
 import "./globals.css";
 
-const siteUrl = "https://www.mtdsoftware.com.tr";
+const fallbackSiteUrl = "https://www.mtdsoftware.com.tr";
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? fallbackSiteUrl;
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
-const spaceGrotesk = Space_Grotesk({
-  subsets: ["latin"],
-  variable: "--font-display",
-});
+const ogImage = "/og?title=MTD%20Software&subtitle=Freelance%20Yaz%C4%B1l%C4%B1m%20Geli%C5%9Ftirici";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://www.mtdsoftware.com.tr"),
+  metadataBase: new URL(siteUrl),
   title: {
     default: "MTD Software | Freelance Yazılım Geliştirici",
     template: "%s | MTD Software",
@@ -35,11 +33,11 @@ export const metadata: Metadata = {
     title: "MTD Software | Freelance Yazılım Geliştirici",
     description:
       "Freelance yazılım geliştirici olarak modern web projeleri, SaaS ürünleri ve teknik danışmanlık sunuyorum.",
-    url: "https://www.mtdsoftware.com.tr",
+    url: siteUrl,
     siteName: "MTD Software",
     images: [
       {
-        url: "/og?title=MTD%20Software&subtitle=Freelance%20Yaz%C4%B1l%C4%B1m%20Geli%C5%9Ftirici",
+        url: ogImage,
         width: 1200,
         height: 630,
         alt: "MTD Software",
@@ -53,9 +51,7 @@ export const metadata: Metadata = {
     title: "MTD Software | Freelance Yazılım Geliştirici",
     description:
       "Freelance yazılım geliştirici olarak modern web projeleri, SaaS ürünleri ve teknik danışmanlık sunuyorum.",
-    images: [
-      "/og?title=MTD%20Software&subtitle=Freelance%20Yaz%C4%B1l%C4%B1m%20Geli%C5%9Ftirici",
-    ],
+    images: [ogImage],
   },
 };
 
@@ -66,15 +62,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="tr" className="scroll-smooth">
-      <body
-        className={`${inter.variable} ${spaceGrotesk.variable} bg-background text-foreground antialiased`}
-      >
+    <html
+      lang="tr"
+      className={`scroll-smooth ${inter.variable} ${spaceGrotesk.variable}`}
+    >
+      <body className="bg-background text-foreground antialiased">
         <div className="min-h-screen flex flex-col">
           <Header />
           <main className="flex-1">{children}</main>
           <Footer />
         </div>
+        <SeoJsonLd />
       </body>
     </html>
   );

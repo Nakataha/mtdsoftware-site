@@ -3,6 +3,8 @@ import type { Metadata } from "next";
 import { services } from "@/data/site";
 import { projects } from "@/data/projects";
 
+export const revalidate = 3600;
+
 export const metadata: Metadata = {
   title: "Anasayfa",
   description:
