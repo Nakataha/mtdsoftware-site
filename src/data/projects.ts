@@ -86,4 +86,26 @@ export const projects: Project[] = [
     technologies: ["Next.js", "Prisma", "MySQL"],
     roles: ["Analiz", "Geliştirme", "Dağıtım"],
   },
+  {
+    slug: "caglar-boyu-kosu",
+    title: "Çağlar Boyu Koşu — Unity 3D",
+    excerpt:
+      "Unity tabanlı 3D koşu oyunu: oyun mekanikleri, sahne geçişleri ve ekip koordinasyonu.",
+    industry: "Oyun & Eğlence",
+    summary:
+      "OTK Studios bünyesinde geliştirilen 3D koşu oyununda oyun mekaniği tasarımı, seviye akışları ve ekip koordinasyonunda görev aldım.",
+    problem:
+      "Hızlı prototipten üretime taşınırken mekaniklerin dengelenmesi, sahne yönetimi ve yayın sürecine hazırlık gerekiyordu.",
+    solution:
+      "Sahne geçiş sistemleri, mekanik prototipleri, seviye akışları ve temel performans optimizasyonlarıyla üretim sürecini standartlaştırdım.",
+    result:
+      "Stabil build’ler, oynanışta tutarlılık ve yayın sürecine hazır pipeline. Topluluk geri bildirimleriyle sonraki iterasyonlara zemin hazırlandı.",
+    technologies: ["Unity", "C#", "Git"],
+    roles: ["Oyun Geliştirme", "Teknik Tasarım", "Ekip Koordinasyonu"],
+    links: [
+      { label: "GitHub (Kod)", url: "https://github.com/OTK-LAB/CaglarBoyuKosu" },
+      { label: "Trailer 1", url: "https://www.youtube.com/watch?v=YSqMpfC8-1Q" },
+      { label: "Trailer 2", url: "https://www.youtube.com/watch?v=rckKbJZbYX0" },
+    ],
+  },
 ];
