@@ -1,16 +1,18 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
+import { consumeRateLimit } from "@/lib/rateLimit";
 import { verifyTurnstile } from "@/security/turnstile";
 
 const JSON = (data: unknown, status = 200) =>
   NextResponse.json(data, { status, headers: { "Cache-Control": "no-store" } });
 
-function getIp(req: NextRequest): string {
-  return req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
-}
-
 export async function POST(req: NextRequest) {
-  // TODO: rate limit requests
+  // Apply a shared rate limiter before any other processing to protect downstream services.
+  const rateLimit = consumeRateLimit("brief", req);
+  if (rateLimit.limited) {
+    return JSON({ error: "Too many requests" }, 429);
+  }
+
   let body: {
     name?: string;
     email?: string;
@@ -35,8 +37,8 @@ export async function POST(req: NextRequest) {
     return JSON({ success: false, message: "Tüm alanları doldurun." }, 400);
   }
 
-  const remoteIp = getIp(req);
-  const verification = await verifyTurnstile(token, remoteIp === "unknown" ? undefined : remoteIp);
+  const ipForTurnstile = rateLimit.isFallback ? undefined : rateLimit.ip;
+  const verification = await verifyTurnstile(token, ipForTurnstile);
   if (!verification.success) {
     return JSON({ success: false, message: verification.message }, verification.status);
   }
