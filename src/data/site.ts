@@ -5,38 +5,61 @@ export interface Service {
   benefits: string[];
 }
 
-export const services: Service[] = [
+export const services = [
   {
-    id: "kurumsal-web-siteleri",
+    id: "kurumsal-web",
     title: "Kurumsal Web Siteleri",
     description:
-      "Next.js ve Tailwind ile hız, güvenlik ve içerik yönetimi kolaylığı sunan çok dilli kurumsal web siteleri.",
+      "Next.js ve WordPress tabanlı, çok dilli ve yüksek performanslı kurumsal web çözümleri geliştiriyorum.",
     benefits: [
-      "Lighthouse 90+ skorlarını hedefleyen performans optimizasyonu",
-      "Koyu/açık tema, içerik modülleri ve SEO yapılandırmaları",
-      "Cloudflare veya Vercel üzerinde yayın, CDN ve temel güvenlik katmanları",
+      "Lighthouse 90+ performans skorları",
+      "Koyu/açık tema, çok dilli içerik, SEO optimizasyonu",
+      "Cloudflare CDN ve güvenlik yapılandırmaları",
     ],
   },
   {
-    id: "entegrasyon-ve-otomasyon",
-    title: "Entegrasyon & Otomasyon",
+    id: "api-entegrasyon",
+    title: "API & Otomasyon Geliştirme",
     description:
-      "Harici API'ler, dosya kaynakları ve iç sistemler arasında veri akışlarını otomatikleştiren çözümler.",
+      ".NET ve TypeScript tabanlı otomasyon sistemleriyle veri toplama, API entegrasyonu ve süreç optimizasyonu sağlarım.",
     benefits: [
-      "CSV/Excel'den veritabanına güvenli aktarım ve doğrulama",
-      "Zamanlanmış görevler, bildirim altyapıları ve raporlama",
-      "Küçük panellerle operasyon ekipleri için yönetilebilirlik",
+      "REST API & mikro servis mimarileri",
+      "Headless browser otomasyonları",
+      "Zamanlanmış görevler ve bildirim altyapısı",
     ],
   },
   {
-    id: "saas-ve-panel-gelistirme",
-    title: "SaaS/Panel Geliştirme",
+    id: "saas-platformlari",
+    title: "SaaS Platformları & Paneller",
     description:
-      "Rol tabanlı erişim, form akışları ve çoklu tenant yapılarıyla ölçeklenebilir SaaS panelleri.",
+      "Çoklu tenant (multi-tenant) yapılar, rol bazlı erişim ve CI/CD destekli SaaS platformları inşa ediyorum.",
     benefits: [
-      "Doğrulama, dosya yükleme ve otomasyon adımlarını kapsayan form süreçleri",
-      "İzleme, loglama ve temel testlerle sürdürülebilir bakım",
-      "Analiz, geliştirme ve dağıtım adımlarını kapsayan teslim yaklaşımı",
+      "Rol tabanlı yetkilendirme",
+      "Form akışları, doğrulama, dosya yükleme",
+      "Gözlemlenebilirlik ve sürüm yönetimi",
+    ],
+  },
+  {
+    id: "performans-guvenlik",
+    title: "Performans & Güvenlik",
+    description:
+      "Cloudflare, Turnstile ve SEO analizleriyle ölçülebilir performans ve güvenlik optimizasyonları.",
+    benefits: [
+      "WAF, cache ve DNS yapılandırmaları",
+      "Form güvenliği (reCAPTCHA/Turnstile)",
+      "GTMetrix & Core Web Vitals iyileştirmeleri",
+    ],
+  },
+  {
+    id: "oyun-gelistirme",
+    title: "Oyun & Prototip Geliştirme",
+    description:
+      "Unity 3D/2D ortamlarında oyun mekanikleri, seviye tasarımı ve prototipleme süreçleri geliştiriyorum.",
+    benefits: [
+      "Hızlı prototipleme ve test",
+      "Performans optimizasyonu",
+      "Yayın süreci ve versiyon yönetimi",
     ],
   },
 ];
+

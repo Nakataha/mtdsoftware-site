@@ -6,27 +6,45 @@ const serviceSections = [
     id: "kurumsal-web-siteleri",
     title: "Kurumsal Web Siteleri",
     items: [
-      "Next.js, Tailwind, Lighthouse 90+",
-      "Çok dilli, koyu/açık tema, SEO",
-      "Cloudflare/Vercel yayın ve CDN",
+      "Next.js, Tailwind ve Lighthouse 90+ performans skorları",
+      "Çok dilli yapı, koyu/açık tema, gelişmiş SEO optimizasyonu",
+      "Cloudflare CDN, SSL, SMTP ve güvenli Vercel dağıtımı",
     ],
   },
   {
-    id: "entegrasyon-ve-otomasyon",
-    title: "Entegrasyon & Otomasyon",
+    id: "api-ve-otomasyon",
+    title: "API & Otomasyon Geliştirme",
     items: [
-      "Harici API’ler, CSV/Excel → DB",
-      "Zamanlanmış görevler, bildirimler",
-      "Basit paneller ve raporlama",
+      "C#/.NET tabanlı REST API ve mikro servis yapıları",
+      "Harici sistem entegrasyonları, otomatik veri toplama",
+      "Headless browser, planlanmış görevler, e-posta bildirimleri",
     ],
   },
   {
-    id: "saas-ve-panel-gelistirme",
-    title: "SaaS/Panel Geliştirme",
+    id: "saas-platformlari",
+    title: "SaaS Platformları & Panel Geliştirme",
     items: [
-      "Rol tabanlı erişim, çoklu tenant",
-      "Form akışları, doğrulama, dosya yükleme",
-      "İzleme, loglama, temel testler",
+      "Rol tabanlı erişim, çoklu tenant (multi-tenant) yapı",
+      "Form akışları, doğrulama, dosya yükleme ve raporlama",
+      "CI/CD, gözlemlenebilirlik ve versiyon yönetimi",
+    ],
+  },
+  {
+    id: "performans-ve-guvenlik",
+    title: "Performans & Güvenlik Optimizasyonu",
+    items: [
+      "Ölçülebilir performans (Lighthouse, GTMetrix, Core Web Vitals)",
+      "reCAPTCHA, Turnstile ve WAF korumalarıyla form güvenliği",
+      "Cloudflare cache, DNS ve SSL yapılandırmaları",
+    ],
+  },
+  {
+    id: "oyun-ve-prototip-gelistirme",
+    title: "Oyun & Prototip Geliştirme",
+    items: [
+      "Unity 3D/2D oyun mekanikleri ve seviye tasarımı",
+      "Prototip üretimi, sahne geçişleri ve ekip koordinasyonu",
+      "Oyun içi test, performans optimizasyonu ve sürüm yönetimi",
     ],
   },
 ];
@@ -34,7 +52,7 @@ const serviceSections = [
 export const metadata: Metadata = {
   title: "Hizmetler",
   description:
-    "Kurumsal web siteleri, entegrasyon ve otomasyon projeleri ile SaaS/panel geliştirme hizmetlerinin özeti.",
+    "Kurumsal web siteleri, API entegrasyonları, SaaS platformları, performans optimizasyonu ve oyun geliştirme alanlarında profesyonel yazılım hizmetleri.",
 };
 
 export default function ServicesPage() {
@@ -61,11 +79,12 @@ export default function ServicesPage() {
               Net kapsamlı, ölçülebilir ve sürdürülebilir yazılım projeleri
             </h1>
             <p className="text-base text-foreground/70 sm:text-lg">
-              MTD Software olarak, kurumların dijital kanallarını güçlendiren ve operasyonlarını hızlandıran çözümler
-              geliştiriyoruz. Ön analizden canlıya alıma kadar her aşamada şeffaf, dokümante edilmiş ve ölçeklenebilir bir
-              yaklaşım benimsiyoruz.
+              MTD Software olarak; kurumların dijital altyapılarını güçlendiren, süreçlerini otomatikleştiren ve kullanıcı
+              deneyimini önceliklendiren çözümler geliştiriyoruz. Her proje; analiz, prototip, sprint ve teslim aşamalarında
+              şeffaf raporlanır, sürdürülebilir kodlama standartlarıyla canlıya alınır.
             </p>
           </div>
+
           <div className="flex flex-col gap-4 rounded-3xl border border-primary/30 bg-primary/5 p-6 text-sm text-foreground/70 shadow-lg shadow-primary/10">
             <p className="font-display text-xl font-semibold text-foreground">Birlikte nasıl ilerleriz?</p>
             <ul className="space-y-2">
@@ -75,11 +94,11 @@ export default function ServicesPage() {
               </li>
               <li className="flex items-start gap-3">
                 <span className="mt-1 inline-flex h-2 w-2 rounded-full bg-primary" aria-hidden="true" />
-                <span>Her sprint sonunda çalışan prototipler ve ölçümler sunarız.</span>
+                <span>Her sprint sonunda çalışan prototipler ve metrikler sunarız.</span>
               </li>
               <li className="flex items-start gap-3">
                 <span className="mt-1 inline-flex h-2 w-2 rounded-full bg-primary" aria-hidden="true" />
-                <span>Devredilebilir kod, dokümantasyon ve eğitim teslim ederiz.</span>
+                <span>Devredilebilir kod, teknik dokümantasyon ve eğitim teslim ederiz.</span>
               </li>
             </ul>
           </div>
@@ -110,21 +129,24 @@ export default function ServicesPage() {
 
         <div className="grid gap-8 rounded-3xl border border-muted/60 bg-background/95 p-8 shadow-lg shadow-primary/5 md:grid-cols-[2fr_3fr] md:items-center">
           <div className="space-y-4">
-            <h2 className="font-display text-3xl font-semibold text-foreground">Teknik mükemmeliyet için kurumsal standartlar</h2>
+            <h2 className="font-display text-3xl font-semibold text-foreground">
+              Teknik mükemmeliyet için kurumsal standartlar
+            </h2>
             <p className="text-sm text-foreground/70">
-              Performans, güvenlik ve sürdürülebilirlik ölçümlerini proje başında belirler, her teslimatta takip ederiz. Kod
-              incelemeleri, CI/CD süreçleri ve gözden geçirme oturumları ile riskleri erkenden kontrol altına alırız.
+              Performans, güvenlik ve sürdürülebilirlik ölçümlerini proje başında belirler; her teslimatta raporlarız.
+              Kod incelemeleri, CI/CD süreçleri, testler ve gözden geçirme oturumlarıyla riskleri erkenden kontrol altına alırız.
+              Her projede hedef; sadece teslim etmek değil, sürdürülebilir bir ürün inşa etmektir.
             </p>
           </div>
           <dl className="grid gap-4 sm:grid-cols-2">
             <div className="rounded-2xl border border-primary/20 bg-primary/5 p-5">
               <dt className="text-xs font-semibold uppercase tracking-wide text-primary">Teslim Süreçleri</dt>
               <dd className="mt-2 text-lg font-semibold text-foreground">Sprint bazlı planlama & raporlama</dd>
-              <p className="mt-1 text-xs text-foreground/60">Ürün yöneticileri ve ekiplerle ortak ritim tutarız.</p>
+              <p className="mt-1 text-xs text-foreground/60">Ürün ekipleriyle ortak ritim ve şeffaf süreç yönetimi.</p>
             </div>
             <div className="rounded-2xl border border-primary/20 bg-primary/5 p-5">
               <dt className="text-xs font-semibold uppercase tracking-wide text-primary">Teknik İzlenebilirlik</dt>
-              <dd className="mt-2 text-lg font-semibold text-foreground">CI/CD, otomatik testler, gözlemleme</dd>
+              <dd className="mt-2 text-lg font-semibold text-foreground">CI/CD, testler ve gözlemlenebilirlik</dd>
               <p className="mt-1 text-xs text-foreground/60">Her ortamda aynı kaliteyi garanti ederiz.</p>
             </div>
             <div className="rounded-2xl border border-primary/20 bg-primary/5 p-5">
